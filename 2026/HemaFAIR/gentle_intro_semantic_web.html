@@ -1,0 +1,3110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Gentle Introduction to the Semantic Web</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  background: #fff;
+  color: #111;
+  overflow: hidden;
+}
+
+/* ── Slide shell ── */
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  padding: 52px 68px 80px;
+  flex-direction: column;
+  overflow: hidden;
+}
+.slide.active { display: flex; }
+/* Allow all direct flex children to shrink when content is tall */
+.slide.active > * { min-height: 0; }
+/* All primary layout grids/flex-cols shrink to fit the slide height */
+.s2-layout,.s3-layout,.s4-bird-flow,.s5-stages,.s6-cards,.s7-annotations,
+.s8-pillars,.star-steps,.rdf2-grid,.sbe-intro-layout,.s-owl-layout,.s-ai-layout,
+.s-ai-tension,.s-ep-layout,.s-pipe-cols,.s12-layout,.s13-grid,
+.s14-balance,.s15-blocks,.s16-compare,.s17-tools,.s18-points,.s-arch-wrap,
+.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Typography ── */
+h2 { font-size: 1.55em; font-weight: 700; margin-bottom: 0.7em; }
+.kicker {
+  font-size: 0.72em; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.16em; color: #999; margin-bottom: 10px;
+}
+.footnote { font-size: 0.75em; color: #888; font-style: italic;
+  border-top: 1px solid #e8e8e8; padding-top: 10px; margin-top: auto; }
+
+/* ── Navigation ── */
+nav {
+  position: fixed; bottom: 28px; right: 48px;
+  display: flex; align-items: center; gap: 12px; font-size: 0.82em;
+}
+nav button {
+  background: #111; color: #fff; border: none;
+  padding: 7px 18px; cursor: pointer; font-size: inherit; font-family: inherit;
+}
+nav button:hover { background: #444; }
+nav button:disabled { background: #ccc; cursor: default; }
+.counter { color: #aaa; min-width: 48px; text-align: center; }
+
+/* ═══ SLIDE 1 – Title ═══ */
+/* ── Fixed logo on every content slide ── */
+.slide-logo {
+  position: fixed; top: 18px; right: 24px;
+  height: 34px; width: auto; z-index: 10;
+  pointer-events: none;
+}
+/* Hide fixed logo on dark slides (has own logo) */
+#s1 ~ * .slide-logo, #s-thankyou .slide-logo { display: none; }
+
+#s1 {
+  background: #003741;
+  color: #fff;
+  padding-left: 80px;
+  padding-top: 60px;
+  justify-content: flex-start;
+}
+#s1::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+  background: #E95D15;
+}
+#s1 .kicker { color: #7BBFCC; }
+#s1 h1 {
+  font-size: 3em; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em; color: #fff; max-width: 860px;
+  margin-bottom: 0;
+}
+.title-sep { width: 280px; height: 2px; background: #E95D15; margin: 26px 0 22px; }
+.speaker-name { font-size: 1.35em; font-weight: 700; color: #fff; margin-bottom: 5px; }
+.speaker-inst { font-size: 0.95em; color: #A8C8D5; margin-bottom: 18px; }
+.speaker-link {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.84em; color: #A8C8D5; margin-bottom: 7px;
+}
+.link-bar {
+  display: inline-block; width: 4px; height: 18px; flex-shrink: 0;
+}
+.link-email .link-bar  { background: #7BBFCC; }
+.link-orcid .link-bar  { background: #A6CE39; }
+.dot-grid {
+  position: absolute; right: 52px; bottom: 52px;
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 11px;
+  pointer-events: none;
+}
+.dot-grid span { width: 6px; height: 6px; background: rgba(255,255,255,0.15); display: block; }
+
+/* ═══ SLIDE 2 – Data in rows and columns ═══ */
+.s2-layout {
+  display: grid; grid-template-columns: 1fr 1.15fr;
+  gap: 48px; flex: 1; align-items: start; margin-top: 0.2em;
+}
+.s2-body { font-size: 0.88em; color: #333; line-height: 1.72; margin-bottom: 18px; }
+.s2-callout {
+  border-left: 4px solid #009CB4; background: #EEF6F5; padding: 14px 18px;
+}
+.s2-callout-head { font-weight: 700; color: #009CB4; font-size: 0.9em; margin-bottom: 6px; }
+.s2-callout-body { font-size: 0.8em; color: #333; line-height: 1.65; }
+.s2-table-label {
+  font-size: 0.66em; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #999; margin-bottom: 8px;
+}
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.77em; }
+.data-table thead th {
+  background: #003741; color: #fff;
+  padding: 8px 10px; text-align: left; font-weight: 600;
+}
+.data-table tbody tr:nth-child(odd)  { background: #EEF3F8; }
+.data-table tbody tr:nth-child(even) { background: #fff; }
+.data-table td { padding: 7px 10px; border: 1px solid #DDE4EF; }
+.s2-footnote { font-size: 0.71em; color: #888; font-style: italic; margin-top: 8px; }
+
+/* ═══ SLIDE 3 – Problem 1: Dimensionality ═══ */
+#s3 .h2-label { /* uses kicker above h2 */ }
+.s3-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 36px; flex: 1; align-items: start;
+}
+.s3-col-label {
+  font-size: 0.66em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #999; margin-bottom: 10px;
+}
+.s3-dim-item {
+  display: flex; border-bottom: 1px solid #eee;
+}
+.s3-dim-item:nth-child(odd) { background: #F7F7F7; }
+.s3-dim-bar { width: 4px; background: #003741; flex-shrink: 0; }
+.s3-dim-inner { padding: 10px 14px; }
+.s3-dim-title { font-weight: 700; font-size: 0.84em; margin-bottom: 3px; }
+.s3-dim-desc  { font-size: 0.75em; color: #555; line-height: 1.5; }
+.s3-right { display: flex; flex-direction: column; gap: 14px; }
+.s3-grid-wrap { background: #003741; padding: 20px 20px 16px; }
+.s3-grid-vis {
+  display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 12px;
+}
+.s3-cell { height: 26px; background: #1F4060; border: 1px solid #3A6080; }
+.s3-cell.hdr { background: #2A5070; }
+.s3-grid-labels {
+  display: flex; gap: 16px; align-items: center;
+}
+.s3-axis-r { font-size: 0.72em; font-weight: 700; color: #009CB4; }
+.s3-axis-c { font-size: 0.72em; font-weight: 700; color: #E89E00; }
+.s3-equals {
+  font-size: 1.4em; font-weight: 700; color: #222; text-align: center; padding: 6px 0;
+}
+.s3-callout {
+  border-left: 4px solid #E89E00; background: #FFF8E1; padding: 14px 18px;
+}
+.s3-callout-head { font-weight: 700; color: #5C3A00; font-size: 0.88em; margin-bottom: 5px; }
+.s3-callout-body { font-size: 0.78em; color: #555; line-height: 1.6; }
+
+/* ═══ SLIDE 4 – Problem 2: Coarse reconstruction ═══ */
+.s4-intro { font-size: 0.86em; color: #444; line-height: 1.65; margin-bottom: 10px; }
+.s4-bird-flow {
+  display: flex; align-items: center; justify-content: center;
+  gap: 0; flex: 1; min-height: 0;
+}
+/* ── Photo + pixel panels ── */
+.s4-panel { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.s4-panel-lbl {
+  font-size: 0.62em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.13em; color: #888;
+}
+.s4-photo-frame {
+  width: 210px; height: 255px;
+  border: 3px solid #bbb; border-radius: 6px; overflow: hidden;
+  position: relative; box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+.s4-photo-frame img {
+  width: 100%; height: 100%; object-fit: cover; object-position: center 15%;
+  display: block;
+}
+/* ── Transition arrows ── */
+.s4-trans {
+  display: flex; flex-direction: column; align-items: center; padding: 0 18px; gap: 4px;
+}
+.s4-trans-sym { font-size: 1.8em; color: #E95D15; line-height: 1; }
+.s4-trans-lbl {
+  font-size: 0.57em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; color: #bbb; text-align: center;
+}
+/* ── Pixel data table deck ── */
+.s4-deck-wrap {
+  position: relative; width: 300px; height: 270px; flex-shrink: 0;
+}
+/* back cards – peeking out behind */
+.s4-deck-card {
+  position: absolute; width: 290px;
+  border: 2px solid #ccc; border-radius: 6px; background: #fff;
+  overflow: hidden;
+}
+.s4-deck-card.back2 {
+  top: 14px; left: 14px; height: 252px; background: #e4edf0;
+  border-color: #b0c8d0; transform: rotate(3.5deg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10); z-index: 1;
+}
+.s4-deck-card.back2::after {
+  content: 'channel_G.csv';
+  display: block; padding: 7px 12px;
+  font-size: 0.62em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.11em; color: #fff; background: #6AB650;
+}
+.s4-deck-card.back1 {
+  top: 7px; left: 7px; height: 252px; background: #eef5f0;
+  border-color: #a0c0aa; transform: rotate(1.8deg);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.12); z-index: 2;
+}
+.s4-deck-card.back1::after {
+  content: 'channel_B.csv';
+  display: block; padding: 7px 12px;
+  font-size: 0.62em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.11em; color: #fff; background: #009CB4;
+}
+/* front card – actual table */
+.s4-deck-card.front {
+  top: 0; left: 0; height: 252px;
+  display: flex; flex-direction: column;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.18); z-index: 3;
+}
+.s4-px-table-hd {
+  background: #003741; color: #fff; padding: 7px 12px;
+  font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; flex-shrink: 0;
+}
+.s4-px-table {
+  width: 100%; border-collapse: collapse; font-size: 0.67em; flex: 1;
+}
+.s4-px-table th {
+  background: #f0f0f0; padding: 5px 8px; font-weight: 700;
+  text-align: center; border-bottom: 2px solid #ccc; font-family: 'Courier New', monospace;
+}
+.s4-px-table td {
+  padding: 4px 8px; text-align: center; border-bottom: 1px solid #eee;
+  font-family: 'Courier New', monospace;
+}
+.s4-px-table tr:nth-child(even) td { background: #fafafa; }
+.s4-px-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px;
+  vertical-align: middle; margin-right: 3px; border: 1px solid rgba(0,0,0,0.15); }
+.s4-px-table-more {
+  text-align: center; font-size: 0.65em; color: #aaa; padding: 6px;
+  border-top: 1px solid #eee; font-style: italic; flex-shrink: 0;
+}
+/* ── Pixel reconstruction frame ── */
+.s4-pixel-frame {
+  width: 210px; height: 255px;
+  border: 3px solid #bbb; border-radius: 6px; overflow: hidden;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+  flex-shrink: 0;
+}
+#s4-pixel-canvas {
+  display: block; width: 210px; height: 255px;
+}
+
+/* ═══ SLIDE 5 – More structure, more formats ═══ */
+.s5-intro { font-size: 0.86em; color: #444; line-height: 1.65; margin-bottom: 14px; }
+.s5-stages { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; flex: 1; }
+.s5-stage { display: flex; flex-direction: column; }
+.s5-era  { font-size: 0.69em; font-weight: 700; margin-bottom: 4px; }
+.s5-head { font-size: 0.82em; font-weight: 700; color: #fff; padding: 8px 12px; }
+.s5-items {
+  background: #F5F5F5; border: 1px solid #ddd; border-top: none;
+  padding: 12px 12px; flex: 1; display: flex; flex-direction: column; gap: 8px;
+}
+.s5-item {
+  display: flex; gap: 8px; align-items: flex-start;
+  font-size: 0.77em; color: #333; line-height: 1.5;
+}
+.s5-dot { width: 6px; height: 6px; border-radius: 50%;
+  flex-shrink: 0; margin-top: 4px; }
+.s5-result {
+  background: #FFF0F0; border-left: 4px solid #990000;
+  padding: 11px 16px; font-size: 0.8em; color: #770000; line-height: 1.6; margin-top: 10px;
+}
+
+/* ═══ SLIDE 6 – Integration challenge ═══ */
+.s6-intro { font-size: 0.86em; color: #444; line-height: 1.65; margin-bottom: 14px; }
+.s6-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; }
+.s6-card { border: 1px solid #ddd; display: flex; flex-direction: column; }
+.s6-card-stripe { height: 6px; }
+.s6-icon-row { display: flex; justify-content: center; padding: 18px 0 10px; }
+.s6-icon { font-size: 1.9em; font-weight: 700; }
+.s6-head { font-weight: 700; font-size: 0.9em; padding: 0 16px 7px; }
+.s6-body { font-size: 0.77em; color: #444; line-height: 1.65; padding: 0 16px 16px; }
+
+/* ═══ SLIDE 7 – Ambiguity ═══ */
+.s7-intro { font-size: 0.86em; color: #444; line-height: 1.65; margin-bottom: 10px; }
+.s7-tbl-label {
+  font-size: 0.66em; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #999; margin-bottom: 7px;
+}
+.s7-annotations {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 8px; margin-top: 8px; flex: 1;
+}
+.s7-ann {
+  border-top: 3px solid var(--ac);
+  border-left: 1px solid #ddd; border-right: 1px solid #ddd; border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+.s7-ann-col {
+  font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--ac); margin-bottom: 8px;
+}
+.s7-q {
+  font-size: 0.72em; color: #333; line-height: 1.55; margin-bottom: 5px;
+  padding-left: 10px; border-left: 2px solid #eee;
+}
+
+/* ═══ SLIDE 8 – The Semantic Web ═══ */
+.s8-intro { font-size: 0.86em; color: #444; line-height: 1.65; margin-bottom: 14px; }
+.s8-pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; flex: 1; }
+.s8-pillar { border: 1px solid #ddd; display: flex; flex-direction: column; }
+.s8-stripe { height: 5px; }
+.s8-nr { font-size: 2em; font-weight: 700; color: #e0e0e0; padding: 14px 16px 4px; line-height: 1; }
+.s8-sub {
+  font-size: 0.67em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; padding: 0 16px 4px;
+}
+.s8-head { font-size: 0.9em; font-weight: 700; padding: 0 16px 10px; }
+.s8-div  { height: 1px; background: #eee; margin: 0 16px 10px; }
+.s8-body { font-size: 0.78em; color: #333; line-height: 1.65; padding: 0 16px 16px; flex: 1; }
+
+/* ═══ SLIDES 9 – 5-star linked data ═══ */
+.star-steps { display: flex; flex-direction: column; gap: 7px; margin-top: 0.3em; flex: 1; }
+.star-step  { display: flex; align-items: flex-start; gap: 16px;
+  padding: 9px 14px; border-left: 4px solid #ccc; }
+.star-low  { border-left-color: #ccc; }
+.star-mid  { border-left-color: #888; }
+.star-high { border-left-color: #111; background: #fafafa; }
+.star-rating { font-size: 0.88em; min-width: 72px; color: #f5a623;
+  letter-spacing: 1px; padding-top: 1px; flex-shrink: 0; }
+.star-content { flex: 1; }
+.star-title { font-weight: 700; font-size: 0.88em; margin-bottom: 2px; }
+.star-desc  { font-size: 0.78em; color: #444; line-height: 1.5; }
+.star-example { font-size: 0.72em; font-family: 'Courier New', monospace;
+  color: #2244aa; margin-top: 3px; }
+.star-footer { margin-top: 12px; font-size: 0.8em; color: #333; line-height: 1.65;
+  border-top: 1px solid #e0e0e0; padding-top: 10px; font-style: italic; }
+
+/* ═══ SLIDE 10 – RDF ═══ */
+.rdf2-intro { font-size: 0.84em; color: #444; line-height: 1.6;
+  margin-bottom: 14px; max-width: 820px; }
+.rdf2-grid { display: grid; grid-template-columns: 1fr 1px 1fr;
+  gap: 0 32px; flex: 1; align-items: start; }
+.rdf2-divider { background: #e0e0e0; }
+.rdf2-nr { font-size: 2.2em; font-weight: 700; color: #ddd;
+  line-height: 1; margin-bottom: 4px; }
+.rdf2-prob-title { font-size: 1em; font-weight: 700; margin-bottom: 6px; }
+.rdf2-prob-body { font-size: 0.8em; color: #555; line-height: 1.55; margin-bottom: 10px; }
+.rdf2-arrow { font-size: 1.4em; color: #111; margin: 4px 0; font-weight: 700; }
+.rdf2-sol-label { font-size: 0.68em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #999; margin-bottom: 3px; }
+.rdf2-sol-title { font-size: 1em; font-weight: 700; margin-bottom: 6px; }
+.rdf2-sol-body { font-size: 0.8em; color: #222; line-height: 1.55; margin-bottom: 10px; }
+pre.triple-ex {
+  background: #f5f5f5; padding: 10px 13px;
+  font-family: 'Courier New', monospace; font-size: 0.72em; line-height: 1.8;
+  border-left: 3px solid #111; white-space: pre-wrap;
+}
+.t-s  { color: #1a6bbf; }
+.t-p  { color: #c2640a; }
+.t-o  { color: #3d7a2a; }
+.rdf2-quote {
+  border-left: 4px solid #009CB4; background: #EEF6F5;
+  padding: 10px 16px; margin-top: 14px; flex-shrink: 0;
+}
+.rdf2-quote p { font-size: 0.82em; color: #333; line-height: 1.65; font-style: italic; }
+.rdf2-quote cite { display: block; font-size: 0.75em; color: #009CB4;
+  font-style: normal; font-weight: 700; margin-top: 5px; }
+.t-c  { color: #aaa; }
+
+/* ═══ SLIDE 11 – SPARQL ═══ */
+.sbe-intro-layout {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 32px; flex: 1; align-items: start; margin-top: 0.4em;
+}
+.sbe-hero {
+  background: #0d2d3a; border-radius: 4px; padding: 18px 20px;
+  color: #fff; margin-bottom: 14px;
+  font-size: 0.84em; line-height: 1.65; opacity: 0.95;
+}
+.sbe-ai {
+  background: #f0f7f5; border-left: 3px solid #0d8a7a;
+  padding: 12px 14px; font-size: 0.79em; line-height: 1.62; color: #222;
+}
+.sbe-svo-compare {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 0;
+  border: 1px solid #e0e0e0; border-radius: 4px; overflow: hidden;
+}
+.sbe-svo-col { padding: 16px 18px; }
+.sbe-svo-col:first-child  { background: #f0f7ff; border-right: 1px solid #e0e0e0; }
+.sbe-svo-col:last-child   { background: #1a2530; }
+.sbe-svo-col h4 {
+  font-size: 0.68em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.1em; margin-bottom: 10px; color: #888;
+}
+.sbe-svo-col:last-child h4 { color: rgba(255,255,255,0.4); }
+.sbe-svo-lbl-row {
+  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px;
+  margin-bottom: 6px; font-size: 0.65em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.08em;
+}
+.lbl-s { color: #1a6bbf; text-align: center; }
+.lbl-p { color: #c2640a; text-align: center; }
+.lbl-o { color: #3d7a2a; text-align: center; }
+.sbe-svo-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; margin-bottom: 3px; }
+.sbe-svo-en-s { padding: 5px 7px; font-size: 0.72em; font-weight: 600; border-radius: 3px; text-align: center; background: #dbeafe; color: #1a6bbf; }
+.sbe-svo-en-p { padding: 5px 7px; font-size: 0.72em; font-weight: 600; border-radius: 3px; text-align: center; background: #fef3c7; color: #c2640a; }
+.sbe-svo-en-o { padding: 5px 7px; font-size: 0.72em; font-weight: 600; border-radius: 3px; text-align: center; background: #d1fae5; color: #3d7a2a; }
+.sbe-svo-sp-s { padding: 5px 7px; font-size: 0.65em; font-weight: 600; border-radius: 3px; text-align: center; font-family: 'Courier New',monospace; background: rgba(26,107,191,0.18); color: #6baee0; }
+.sbe-svo-sp-p { padding: 5px 7px; font-size: 0.65em; font-weight: 600; border-radius: 3px; text-align: center; font-family: 'Courier New',monospace; background: rgba(194,100,10,0.18); color: #d4893a; }
+.sbe-svo-sp-o { padding: 5px 7px; font-size: 0.65em; font-weight: 600; border-radius: 3px; text-align: center; font-family: 'Courier New',monospace; background: rgba(42,122,69,0.18); color: #5ba87d; }
+.sbe-key-msg {
+  border-left: 3px solid #009CB4; background: #f0f7f5;
+  padding: 12px 14px; margin-top: 14px;
+  font-size: 0.78em; line-height: 1.62; color: #222;
+}
+.sbe-key-msg strong { color: #009CB4; }
+
+/* ═══ SLIDE OWL – OWL & Reasoning ═══ */
+.s-owl-layout {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 32px; flex: 1; min-height: 0;
+}
+.s-owl-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 14px; }
+.s-owl-col-lbl {
+  font-size: 0.63em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.13em; color: #999; margin-bottom: 10px;
+}
+.s-owl-box {
+  border: 1px solid #ddd; margin-bottom: 12px; overflow: hidden;
+}
+.s-owl-box-hd {
+  padding: 7px 13px; font-size: 0.7em; font-weight: 700; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.s-owl-box-body {
+  padding: 10px 13px; font-size: 0.77em; color: #333;
+  line-height: 1.65; background: #fafafa; border-top: 1px solid #eee;
+}
+.s-owl-code {
+  font-family: 'Courier New', monospace; font-size: 0.85em;
+  color: #003741; background: #f0f5f6; padding: 2px 5px; border-radius: 2px;
+}
+/* Inference diagram */
+.s-owl-infer {
+  border: 1px solid #009CB4; overflow: hidden;
+}
+.s-owl-infer-hd {
+  background: #009CB4; padding: 8px 13px;
+  font-size: 0.68em; font-weight: 700; color: #fff;
+  text-transform: uppercase; letter-spacing: 0.1em;
+}
+.s-owl-infer-section { padding: 9px 13px; border-top: 1px solid #d8eef2; }
+.s-owl-infer-lbl {
+  font-size: 0.6em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #999; margin-bottom: 5px;
+}
+.s-owl-triple {
+  font-family: 'Courier New', monospace; font-size: 0.75em;
+  color: #333; line-height: 1.7;
+}
+.s-owl-triple .s  { color: #003741; font-weight: 700; }
+.s-owl-triple .p  { color: #009CB4; }
+.s-owl-triple .o  { color: #5a3a00; }
+.s-owl-inferred {
+  font-family: 'Courier New', monospace; font-size: 0.75em;
+  color: #E95D15; line-height: 1.7; font-weight: 700;
+}
+.s-owl-derived-lbl {
+  display: inline-block; background: #E95D15; color: #fff;
+  font-size: 0.58em; font-weight: 700; padding: 1px 6px; border-radius: 2px;
+  text-transform: uppercase; letter-spacing: 0.08em; vertical-align: middle;
+  margin-left: 6px;
+}
+.s-owl-callout {
+  background: #EEF6F5; border-left: 4px solid #009CB4;
+  padding: 10px 14px; font-size: 0.79em; color: #333; line-height: 1.65; margin-top: 12px;
+}
+.s-owl-callout strong { color: #003741; }
+
+/* ═══ SLIDE 12 – Generative AI & SPARQL ═══ */
+.s-ai-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; }
+.s-ai-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 13px; }
+.s-ai-tension { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+.s-ai-side { border: 1px solid #ddd; overflow: hidden; }
+.s-ai-side-hd { padding: 7px 13px; font-size: 0.72em; font-weight: 700; color: #fff; text-transform: uppercase; letter-spacing: 0.1em; }
+.s-ai-side-body { padding: 10px 13px; font-size: 0.79em; color: #333; line-height: 1.65; background: #fafafa; border-top: 1px solid #eee; }
+.s-ai-svo { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; margin-top: 8px; }
+.s-ai-svo-s { background: #dbeafe; color: #1a6bbf; font-weight: 700; font-size: 0.76em; padding: 5px 7px; text-align: center; border-radius: 2px; }
+.s-ai-svo-p { background: #fef3c7; color: #c2640a; font-weight: 700; font-size: 0.76em; padding: 5px 7px; text-align: center; border-radius: 2px; }
+.s-ai-svo-o { background: #d1fae5; color: #3d7a2a; font-weight: 700; font-size: 0.76em; padding: 5px 7px; text-align: center; border-radius: 2px; }
+.s-ai-bridge { background: #003741; color: #fff; padding: 14px 16px; margin-bottom: 12px; }
+.s-ai-bridge-lbl { font-size: 0.6em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: #7BBFCC; margin-bottom: 8px; }
+.s-ai-bridge-flow { display: flex; align-items: center; gap: 6px; font-size: 0.8em; flex-wrap: wrap; }
+.s-ai-nl  { background: rgba(255,255,255,0.12); padding: 4px 10px; font-style: italic; color: #fff; }
+.s-ai-arr { color: #009CB4; font-weight: 700; }
+.s-ai-sp  { background: #009CB4; padding: 4px 10px; font-family: 'Courier New', monospace; font-size: 0.9em; color: #fff; }
+.s-ai-example { border: 1px solid #009CB4; overflow: hidden; }
+.s-ai-ex-hd { background: #009CB4; padding: 8px 13px; display: flex; align-items: baseline; gap: 10px; }
+.s-ai-ex-name { font-weight: 700; font-size: 0.82em; color: #fff; }
+.s-ai-ex-tag  { font-size: 0.6em; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.55); }
+.s-ai-ex-body { padding: 10px 13px; font-size: 0.78em; color: #333; line-height: 1.65; }
+.s-ai-ex-kbs  { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.s-ai-kb { font-size: 0.67em; font-weight: 600; padding: 2px 8px; background: #EEF6F5; color: #009CB4; border-radius: 2px; }
+.s-ai-callout { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 11px 14px; font-size: 0.79em; color: #444; line-height: 1.65; margin-top: 12px; }
+.s-ai-callout strong { color: #5C3A00; }
+
+/* ═══ Thank-you slide ═══ */
+#s-thankyou { background: #003741; color: #fff; justify-content: center; }
+#s-thankyou::before { content:''; position:absolute; left:0; top:0; bottom:0; width:12px; background:#E95D15; }
+.ty-big { font-size: 3.6em; font-weight: 700; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 0; }
+.ty-sub { font-size: 1em; color: #A8C8D5; margin-top: 18px; margin-bottom: 28px; line-height: 1.6; max-width: 560px; }
+.ty-sep { width: 280px; height: 2px; background: #009CB4; margin-bottom: 28px; }
+.ty-contact { display: flex; flex-direction: column; gap: 9px; }
+.ty-line { display: flex; align-items: center; gap: 11px; font-size: 0.88em; color: #A8C8D5; }
+.ty-bar { display: inline-block; width: 4px; height: 18px; flex-shrink: 0; }
+.ty-orcid-bar { background: #A6CE39; }
+.ty-email-bar { background: #7BBFCC; }
+.ty-url-bar   { background: #009CB4; }
+
+/* ═══ SLIDE 12 – SPARQL endpoints & tooling ═══ */
+.s-ep-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 13px; }
+.s-ep-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+.s-ep-col-lbl { font-size: 0.63em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: #999; margin-bottom: 9px; }
+.s-ep-service { border: 1px solid #ddd; margin-bottom: 11px; overflow: hidden; }
+.s-ep-svc-hd  { padding: 7px 13px; display: flex; align-items: baseline; gap: 10px; }
+.s-ep-svc-name { font-weight: 700; font-size: 0.82em; color: #fff; }
+.s-ep-svc-tag  { font-size: 0.6em; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); }
+.s-ep-svc-body { padding: 9px 13px; font-size: 0.77em; color: #333; line-height: 1.6; background: #fafafa; border-top: 1px solid #eee; }
+.s-ep-renders  { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.s-ep-render-tag { font-size: 0.67em; font-weight: 600; padding: 2px 8px; background: #eee; color: #555; border-radius: 2px; }
+.s-ep-rest-box { background: #111; color: #fff; padding: 14px 16px; margin-bottom: 11px; }
+.s-ep-rest-lbl { font-size: 0.6em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: #888; margin-bottom: 8px; }
+.s-ep-rest-line { font-family: 'Courier New', monospace; font-size: 0.68em; line-height: 1.9; word-break: break-all; }
+.s-ep-rest-kw  { color: #d4893a; }
+.s-ep-rest-url { color: #6baee0; }
+.s-ep-rest-val { color: #5ba87d; }
+.s-ep-note { background: #EEF6F5; border-left: 4px solid #009CB4; padding: 10px 13px; font-size: 0.78em; color: #333; line-height: 1.6; }
+.s-ep-note strong { color: #009CB4; }
+
+/* ═══ SLIDE 13 – SPARQL → pipelines ═══ */
+.s-pipe-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 10px; }
+.s-pipe-flow { display: flex; align-items: center; gap: 0; margin-bottom: 14px; }
+.s-pipe-step { background: #003741; color: #fff; padding: 8px 14px; font-size: 0.74em; font-weight: 700; text-align: center; flex: 1; }
+.s-pipe-step.alt  { background: #009CB4; }
+.s-pipe-step.alt2 { background: #5C3A00; }
+.s-pipe-step.alt3 { background: #555; }
+.s-pipe-arr { font-size: 1.1em; color: #ccc; padding: 0 4px; flex-shrink: 0; }
+.s-pipe-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; flex: 1; }
+.s-pipe-col-hd { padding: 8px 14px; font-size: 0.74em; font-weight: 700; color: #fff; margin-bottom: 0; }
+.s-pipe-code-block { background: #1a2530; padding: 13px 15px; font-family: 'Courier New', monospace; font-size: 0.7em; line-height: 1.85; color: #ccc; border-top: 1px solid #111; flex: 1; }
+.s-pipe-code-block .ck  { color: #d4893a; }
+.s-pipe-code-block .cs  { color: #5ba87d; }
+.s-pipe-code-block .cv  { color: #6baee0; }
+.s-pipe-code-block .cm  { color: #888; font-style: italic; }
+.s-pipe-col { border: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
+.s-pipe-bottom { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 10px 14px; font-size: 0.79em; color: #444; line-height: 1.6; margin-top: 12px; }
+.s-pipe-bottom strong { color: #5C3A00; }
+
+/* ═══ SLIDE 12 – Data Shapes intro ═══ */
+.s12-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 36px; flex: 1; align-items: start; }
+.s12-intro { font-size: 0.86em; color: #444; line-height: 1.7; margin-bottom: 14px; }
+.s12-tools { display: flex; flex-direction: column; gap: 9px; margin-bottom: 14px; }
+.s12-tool { display: flex; align-items: flex-start; gap: 12px; padding: 10px 14px; background: #fafafa; border-left: 4px solid #ccc; }
+.s12-tool-name { font-size: 0.76em; font-weight: 700; font-family: 'Courier New', monospace; min-width: 58px; color: #111; padding-top: 1px; }
+.s12-tool-desc { font-size: 0.76em; color: #444; line-height: 1.55; }
+.s12-note { font-size: 0.77em; color: #666; line-height: 1.6; font-style: italic; border-top: 1px solid #eee; padding-top: 11px; }
+.s12-box { background: #003741; color: #fff; padding: 16px 18px; margin-bottom: 12px; }
+.s12-box-lbl { font-size: 0.62em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #7BBFCC; margin-bottom: 10px; }
+.s12-shape-row { font-family: 'Courier New', monospace; font-size: 0.74em; line-height: 1.9; }
+.sc { color: #6baee0; } .sp2 { color: #d4893a; } .so2 { color: #5ba87d; } .sk { color: #E89E00; }
+.s12-arr { text-align: center; font-size: 1.1em; color: #009CB4; margin: 8px 0; font-weight: 700; }
+.s12-valid   { background: #EEF6F5; border-left: 4px solid #009CB4; padding: 9px 14px; font-size: 0.78em; color: #009CB4; font-weight: 600; margin-bottom: 8px; }
+.s12-invalid { background: #FFF0F0; border-left: 4px solid #CC3333; padding: 9px 14px; font-size: 0.78em; color: #CC3333; font-weight: 600; }
+
+/* ═══ SLIDE 13 – What shapes allow ═══ */
+.s13-intro { font-size: 0.84em; color: #444; line-height: 1.65; margin-bottom: 16px; }
+.s13-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; flex: 1; }
+.s13-card { border: 1px solid #e0e0e0; display: flex; flex-direction: column; overflow: hidden; }
+.s13-card-head { padding: 10px 16px; display: flex; align-items: center; gap: 12px; }
+.s13-card-nr { font-size: 1.6em; font-weight: 700; color: rgba(255,255,255,0.3); line-height: 1; flex-shrink: 0; }
+.s13-card-title { font-size: 0.86em; font-weight: 700; color: #fff; line-height: 1.25; }
+.s13-card-body { padding: 12px 16px; font-size: 0.79em; color: #333; line-height: 1.65; flex: 1; background: #fafafa; border-top: 1px solid #e0e0e0; }
+
+/* ═══ SLIDE 14 – Validation balance act ═══ */
+.s14-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 12px; }
+.s14-balance { display: grid; grid-template-columns: 1fr 48px 1fr; gap: 0; flex: 1; align-items: stretch; }
+.s14-side { border: 1px solid #ddd; padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+.s14-side-lbl { font-size: 0.64em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #fff; padding: 5px 10px; text-align: center; }
+.s14-side-body { font-size: 0.8em; color: #333; line-height: 1.65; }
+.s14-ex { font-family: 'Courier New', monospace; font-size: 0.72em; color: #555; background: #f5f5f5; padding: 7px 10px; border-left: 3px solid #ccc; }
+.s14-mid { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.s14-vs { font-size: 0.72em; font-weight: 700; color: #999; letter-spacing: 4px; writing-mode: vertical-rl; }
+.s14-callout { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 13px 16px; font-size: 0.81em; color: #444; line-height: 1.65; margin-top: 12px; }
+.s14-callout strong { color: #5C3A00; }
+
+/* ═══ SLIDE 15 – RDF Flexibility ═══ */
+.s15-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 12px; }
+.s15-blocks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+.s15-block { border: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
+.s15-block-hd { padding: 10px 14px 8px; }
+.s15-block-nr { font-size: 1.8em; font-weight: 700; color: rgba(255,255,255,0.28); line-height: 1; }
+.s15-block-title { font-size: 0.86em; font-weight: 700; color: #fff; }
+.s15-block-body { padding: 11px 14px; font-size: 0.78em; color: #333; line-height: 1.65; flex: 1; background: #fafafa; border-top: 1px solid #e0e0e0; }
+.s15-block-code { font-family: 'Courier New', monospace; font-size: 0.9em; color: #009CB4; display: block; margin-top: 6px; }
+.s15-note { background: #EEF6F5; border-left: 4px solid #009CB4; padding: 12px 16px; font-size: 0.81em; color: #333; line-height: 1.65; }
+.s15-note strong { color: #009CB4; }
+
+/* ═══ SLIDE 16 – Namespace specificity ═══ */
+.s16-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 12px; }
+.s16-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; flex: 1; }
+.s16-col-lbl { font-size: 0.64em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 10px; }
+.s16-ns-item { margin-bottom: 12px; }
+.s16-ns-name { font-family: 'Courier New', monospace; font-size: 0.78em; font-weight: 700; padding: 5px 10px; color: #fff; margin-bottom: 4px; display: inline-block; }
+.s16-ns-desc { font-size: 0.77em; color: #444; line-height: 1.55; padding-left: 10px; border-left: 2px solid #ddd; }
+.s16-ns-ex { font-family: 'Courier New', monospace; font-size: 0.68em; color: #888; margin-top: 3px; padding-left: 10px; display: block; }
+.s16-callout { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 12px 16px; font-size: 0.8em; color: #444; line-height: 1.65; margin-top: 12px; }
+.s16-callout strong { color: #5C3A00; }
+
+/* ═══ SLIDE 17 – Transferring between namespaces ═══ */
+.s17-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 14px; }
+.s17-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; flex: 1; }
+.s17-tool { border: 1px solid #ddd; display: flex; flex-direction: column; overflow: hidden; }
+.s17-tool-hd { padding: 8px 14px; display: flex; align-items: baseline; gap: 10px; }
+.s17-tool-name { font-family: 'Courier New', monospace; font-size: 0.85em; font-weight: 700; color: #fff; }
+.s17-tool-tag { font-size: 0.6em; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); }
+.s17-tool-body { padding: 11px 14px; font-size: 0.78em; color: #333; line-height: 1.65; flex: 1; background: #fafafa; border-top: 1px solid #e0e0e0; }
+.s17-tool-ex { font-family: 'Courier New', monospace; font-size: 0.75em; color: #555; background: #f0f0f0; padding: 5px 9px; margin-top: 7px; display: block; border-left: 2px solid #ccc; }
+
+/* ═══ SLIDE ARCH – Architecture diagram ═══ */
+.s-arch-wrap {
+  flex: 1; display: flex; flex-direction: column; gap: 0;
+  min-height: 0; justify-content: space-between;
+}
+.s-arch-row {
+  display: flex; align-items: stretch; gap: 8px;
+}
+.s-arch-node {
+  flex: 1; border-radius: 4px; padding: 7px 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center;
+}
+.s-arch-node-title {
+  font-size: 0.75em; font-weight: 700; color: #fff; line-height: 1.3;
+}
+.s-arch-node-sub {
+  font-size: 0.6em; color: rgba(255,255,255,0.72); margin-top: 2px; line-height: 1.3;
+}
+.s-arch-node.raw    { background: #5a5a5a; }
+.s-arch-node.rdf    { background: #003741; }
+.s-arch-node.owl    { background: #005a6a; }
+.s-arch-node.shape  { background: #C2640A; }
+.s-arch-node.sparql { background: #009CB4; }
+.s-arch-node.app    { background: #6AB650; }
+.s-arch-node.bridge { background: #E89E00; }
+/* layer label on left */
+.s-arch-layer {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 1px;
+}
+.s-arch-layer-lbl {
+  font-size: 0.58em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #bbb; width: 110px; flex-shrink: 0; text-align: right;
+}
+/* connector arrow row */
+.s-arch-conn {
+  display: flex; align-items: center; height: 20px; padding-left: 120px;
+}
+.s-arch-conn-line {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.s-arch-conn-arr { font-size: 1em; color: #ccc; line-height: 1; }
+.s-arch-conn-txt { font-size: 0.55em; color: #bbb; text-transform: uppercase;
+  letter-spacing: 0.1em; margin-top: 1px; }
+
+/* ═══ SLIDE 18 – Conclusion ═══ */
+#s18 { background: #003741; color: #fff; }
+#s18::before { content:''; position:absolute; left:0; top:0; bottom:0; width:12px; background:#E95D15; }
+#s18 h2 { color: #fff; margin-bottom: 0.5em; }
+.s18-points { display: flex; flex-direction: column; gap: 9px; flex: 1; }
+.s18-point { display: flex; align-items: flex-start; gap: 13px; padding: 11px 16px; background: rgba(255,255,255,0.06); border-left: 3px solid #009CB4; }
+.s18-dot { width: 7px; height: 7px; border-radius: 50%; background: #009CB4; flex-shrink: 0; margin-top: 5px; }
+.s18-text { font-size: 0.84em; color: rgba(255,255,255,0.88); line-height: 1.6; }
+.s18-text strong { color: #fff; }
+.s18-closing { margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(255,255,255,0.15); font-size: 0.8em; color: rgba(255,255,255,0.55); font-style: italic; line-height: 1.6; }
+
+/* ── Detail navigation indicator ── */
+.detail-btn {
+  position: absolute; bottom: 68px; left: 50%;
+  transform: translateX(-50%);
+  background: none; border: none; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  color: #009CB4; font-family: Arial, sans-serif;
+  font-size: 0.6em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  opacity: 0.5; transition: opacity 0.15s; z-index: 5; padding: 4px 10px;
+}
+.detail-btn:hover { opacity: 1; }
+.detail-btn .darr { font-size: 1.5em; line-height: 1; display: block;
+  animation: dbounce 2s ease-in-out infinite; }
+@keyframes dbounce {
+  0%, 70%, 100% { transform: translateY(0); }
+  40% { transform: translateY(4px); }
+}
+#s1 .detail-btn, #s18 .detail-btn, #s-thankyou .detail-btn {
+  color: rgba(255,255,255,0.45);
+}
+
+/* ── Detail slides ── */
+.detail-slide { border-top: 5px solid #E95D15; background: #fff; }
+.detail-hdr {
+  display: flex; align-items: center; gap: 14px;
+  padding-bottom: 11px; margin-bottom: 14px;
+  border-bottom: 1px solid #eee; flex-shrink: 0;
+}
+.detail-back {
+  background: #003741; color: #fff; border: none;
+  padding: 5px 12px; font-family: Arial, sans-serif;
+  font-size: 0.74em; font-weight: 700; cursor: pointer; flex-shrink: 0;
+}
+.detail-back:hover { background: #005070; }
+.detail-parent-lbl {
+  font-size: 0.63em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.12em; color: #bbb;
+}
+.detail-parent-title {
+  font-size: 0.82em; font-weight: 700; color: #003741; margin-left: 5px;
+}
+.detail-idx { margin-left: auto; font-size: 0.65em; color: #ccc; font-weight: 600; }
+.detail-body {
+  flex: 1; min-height: 0; display: flex;
+  align-items: flex-start; justify-content: flex-start;
+  border: 2px dashed #e0e0e0;
+  padding: 28px 36px; overflow-y: auto;
+  font-size: 1em; color: #222; line-height: 1.7;
+}
+.detail-ph { width: 100%; }
+.detail-ph .dph-icon { font-size: 2.2em; margin-bottom: 14px; display: block; }
+.detail-ph p { font-size: 1em; color: #333; }
+.detail-ph p strong { color: #003741; }
+.detail-ph p em { color: #555; }
+.detail-ph a { color: #009CB4; }
+.detail-ph code { font-size: 0.88em; background: #f0f0f0; padding: 2px 6px; color: #333; border-radius: 2px; }
+.detail-ph pre { font-size: 0.85em; background: #f5f5f5; padding: 10px 14px; border-radius: 4px; overflow-x: auto; line-height: 1.6; }
+.detail-ph table { width: 100%; border-collapse: collapse; font-size: 0.92em; margin-top: 8px; }
+.detail-ph th { text-align: left; padding: 6px 10px; background: #f0f0f0; font-weight: 700; }
+.detail-ph td { padding: 6px 10px; }
+.detail-ph tr:nth-child(even) td { background: #f9f9f9; }
+
+/* ════════════════════════════════════════════
+   ShExMap slides — What & Why
+   ════════════════════════════════════════════ */
+.shxm-cols {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 22px; flex: 1; margin-top: 0.4em;
+}
+.shxm-box {
+  border-radius: 4px; padding: 14px;
+}
+.shxm-box.problem  { background: #FFF3E0; border-left: 4px solid #E65100; }
+.shxm-box.solution { background: #E8F5E9; border-left: 4px solid #2E7D32; }
+.shxm-box-hd { font-size: 0.82em; font-weight: 700; margin-bottom: 8px; }
+.shxm-box.problem  .shxm-box-hd { color: #BF360C; }
+.shxm-box.solution .shxm-box-hd { color: #1B5E20; }
+.shxm-box-body { font-size: 0.73em; color: #444; line-height: 1.55; }
+.shxm-box-body li { margin-bottom: 4px; }
+.shxm-anno {
+  display: inline-block; background: #E3F2FD; border-radius: 3px;
+  padding: 1px 6px; font-family: 'Courier New', monospace;
+  font-size: 0.88em; color: #0D47A1;
+}
+
+/* ════════════════════════════════════════════
+   ShExMap slides — Pipeline
+   ════════════════════════════════════════════ */
+.shxp-steps {
+  display: flex; align-items: stretch; gap: 0;
+  flex: 1; margin-top: 0.5em;
+}
+.shxp-step {
+  flex: 1; border-radius: 4px;
+  padding: 12px; display: flex; flex-direction: column;
+  min-height: 0; overflow: hidden;
+}
+.shxp-step.teal   { background: #E0F7FA; }
+.shxp-step.indigo { background: #E8EAF6; }
+.shxp-step.green  { background: #E8F5E9; }
+.shxp-arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.4em; color: #90A4AE; flex-shrink: 0; width: 32px;
+}
+.shxp-step-num {
+  font-size: 0.62em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.14em; margin-bottom: 6px;
+}
+.shxp-step.teal   .shxp-step-num { color: #00838F; }
+.shxp-step.indigo .shxp-step-num { color: #3949AB; }
+.shxp-step.green  .shxp-step-num { color: #2E7D32; }
+.shxp-step-hd { font-size: 0.9em; font-weight: 700; margin-bottom: 8px; }
+.shxp-step.teal   .shxp-step-hd  { color: #006064; }
+.shxp-step.indigo .shxp-step-hd  { color: #283593; }
+.shxp-step.green  .shxp-step-hd  { color: #1B5E20; }
+.shxp-step-body { font-size: 0.7em; color: #555; line-height: 1.5; flex: 1; min-height: 0; overflow: hidden; }
+.shxp-code {
+  margin-top: 7px; background: rgba(255,255,255,0.65);
+  border-radius: 3px; padding: 6px 8px;
+  font-family: 'Courier New', monospace; font-size: 0.8em;
+  color: #333; line-height: 1.55;
+}
+.shxp-hl  { color: #E65100; font-weight: 700; }
+.shxp-var { color: #0D47A1; }
+.shxp-out { color: #2E7D32; font-weight: 600; }
+
+/* ════════════════════════════════════════════
+   ShExMap slides — BP Example
+   ════════════════════════════════════════════ */
+.shxe-cols {
+  display: grid; grid-template-columns: 1fr 36px 1fr 36px 1fr;
+  gap: 0; align-items: stretch; flex: 1; margin-top: 0.4em;
+}
+.shxe-panel {
+  background: #F5F5F5; border-radius: 4px; padding: 10px 11px;
+  display: flex; flex-direction: column; min-height: 0; overflow: hidden;
+}
+.shxe-panel.fhir { background: #E3F2FD; }
+.shxe-panel.bind { background: #FFF8E1; }
+.shxe-panel.dam  { background: #E8F5E9; }
+.shxe-arrow {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.3em; color: #90A4AE; flex-shrink: 0;
+}
+.shxe-panel-lbl {
+  font-size: 0.63em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.13em; margin-bottom: 8px;
+}
+.shxe-panel.fhir .shxe-panel-lbl { color: #0D47A1; }
+.shxe-panel.bind .shxe-panel-lbl { color: #E65100; }
+.shxe-panel.dam  .shxe-panel-lbl { color: #1B5E20; }
+.shxe-code {
+  font-family: 'Courier New', monospace; font-size: 0.68em;
+  color: #333; line-height: 1.7; flex: 1;
+}
+.shxe-key  { color: #5C6BC0; }
+.shxe-val  { color: #2E7D32; }
+.shxe-anno { color: #E65100; font-weight: 600; }
+.shxe-prop { color: #0D47A1; }
+
+/* ════════════════════════════════════════════
+   OMOP2FHIR via Ontop
+   ════════════════════════════════════════════ */
+.omop-cols {
+  display: grid; grid-template-columns: 1fr 1.15fr;
+  gap: 24px; flex: 1; margin-top: 0.4em;
+}
+.omop-explain {
+  display: flex; flex-direction: column; gap: 10px;
+  min-height: 0; overflow: hidden;
+}
+.omop-lede { font-size: 0.78em; color: #333; line-height: 1.6; }
+.omop-steps { display: flex; flex-direction: column; gap: 7px; flex: 1; }
+.omop-step {
+  background: #F5F5F5; border-left: 3px solid #5C6BC0;
+  padding: 8px 12px; font-size: 0.72em; color: #444; line-height: 1.5;
+}
+.omop-step.fhir  { border-color: #0277BD; background: #E1F5FE; }
+.omop-step.omop  { border-color: #00838F; background: #E0F7FA; }
+.omop-step.query { border-color: #558B2F; background: #F1F8E9; }
+.omop-step-lbl { font-weight: 700; font-size: 0.9em; margin-bottom: 2px; }
+.omop-step.fhir  .omop-step-lbl { color: #01579B; }
+.omop-step.omop  .omop-step-lbl { color: #006064; }
+.omop-step.query .omop-step-lbl { color: #33691E; }
+.omop-code-panel {
+  background: #1E2A3A; border-radius: 5px; padding: 14px 16px;
+  font-family: 'Courier New', monospace; font-size: 0.67em;
+  color: #CFD8DC; line-height: 1.65; min-height: 0; overflow: hidden;
+}
+.omop-kw   { color: #80CBC4; font-weight: 700; }
+.omop-var  { color: #82AAFF; }
+.omop-str  { color: #C3E88D; }
+.omop-cm   { color: #546E7A; font-style: italic; }
+.omop-uri  { color: #FFCB6B; }
+.omop-attr { color: #F78C6C; }
+.omop-credit { font-size: 0.68em; color: #888; margin-top: 6px; flex-shrink: 0; }
+.omop-credit strong { color: #555; }
+
+</style>
+</head>
+<body>
+
+<!-- Fixed logo shown on every content slide (hidden on dark slides via JS) -->
+<img src="amumc_icon.png" class="slide-logo" id="fixed-logo" alt="Amsterdam UMC">
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 1 – Title
+     ═══════════════════════════════════════════════ -->
+<section class="slide active" id="s1">
+  <!-- Amsterdam UMC logo top-right of title slide -->
+  <img src="amumc_logo.png" alt="Amsterdam UMC"
+       style="position:absolute;top:32px;right:48px;height:52px;width:auto">
+  <p class="kicker">Webinar &nbsp;·&nbsp; Amsterdam UMC</p>
+  <h1>A Gentle Introduction<br>to the Semantic Web</h1>
+  <div class="title-sep"></div>
+  <p class="speaker-name">Andra Waagmeester</p>
+  <p class="speaker-inst">Amsterdam UMC</p>
+  <p class="speaker-link link-email"><span class="link-bar"></span>a.s.waagmeester@amsterdamumc.nl</p>
+  <p class="speaker-link link-orcid"><span class="link-bar"></span>ORCID: 0000-0001-9773-4008</p>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 2 – Data: our world in rows and columns
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s2">
+  <h2>Data: our world captured in rows and columns</h2>
+  <div class="s2-layout">
+    <div>
+      <p class="s2-body">The most universal data format in the world is the spreadsheet. It gives us two things: <strong>structure</strong> and <strong>flexibility</strong>. We can record observations, group them by what they have in common, and share them with anyone who has a computer.</p>
+      <p class="s2-body">A table has rows — one per observation — and columns — one per property. We choose which properties matter and organise our world accordingly.</p>
+      <div class="s2-callout">
+        <p class="s2-callout-head">The spreadsheet is not just a tool — it is a worldview.</p>
+        <p class="s2-callout-body">Every Excel file embeds a set of decisions: what to measure, what to call it, and how to group it. Those decisions shape what questions you can later ask of the data.</p>
+      </div>
+    </div>
+    <div>
+      <p class="s2-table-label">Example: a clinical data table</p>
+      <table class="data-table">
+        <thead>
+          <tr><th>patient_id</th><th>date</th><th>diagnosis</th><th>value</th><th>unit</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>12345</td><td>2024-01-15</td><td>diabetes</td><td>7.2</td><td>HbA1c%</td></tr>
+          <tr><td>12345</td><td>2024-02-20</td><td>diabetes</td><td>6.9</td><td>HbA1c%</td></tr>
+          <tr><td>67890</td><td>2024-01-10</td><td>hypertension</td><td>140</td><td>mmHg</td></tr>
+          <tr><td>67890</td><td>2024-03-05</td><td>hypertension</td><td>135</td><td>mmHg</td></tr>
+          <tr><td>44210</td><td>2024-02-01</td><td>asthma</td><td>68</td><td>FEV1%</td></tr>
+          <tr><td>44210</td><td>2024-02-01</td><td>asthma</td><td>72</td><td>FEV1%</td></tr>
+          <tr><td>99001</td><td>2024-03-12</td><td>diabetes</td><td>8.1</td><td>HbA1c%</td></tr>
+        </tbody>
+      </table>
+      <p class="s2-footnote">This table looks clean and complete. But is it? We will revisit it in a few slides.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 3 – Problem 1: Two dimensions
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s3">
+  <h2>Problem 1: our world has many dimensions — tables have two</h2>
+  <div class="s3-layout">
+    <div>
+      <p class="s3-col-label">The world needs to express:</p>
+      <div class="s3-dim-item">
+        <div class="s3-dim-bar"></div>
+        <div class="s3-dim-inner">
+          <p class="s3-dim-title">Time</p>
+          <p class="s3-dim-desc">When did this happen? For how long? In what sequence?</p>
+        </div>
+      </div>
+      <div class="s3-dim-item">
+        <div class="s3-dim-bar"></div>
+        <div class="s3-dim-inner">
+          <p class="s3-dim-title">Hierarchy</p>
+          <p class="s3-dim-desc">Is this a subtype of something? Part of a larger whole?</p>
+        </div>
+      </div>
+      <div class="s3-dim-item">
+        <div class="s3-dim-bar"></div>
+        <div class="s3-dim-inner">
+          <p class="s3-dim-title">Relationships</p>
+          <p class="s3-dim-desc">How does this entity relate to others? Via which property?</p>
+        </div>
+      </div>
+      <div class="s3-dim-item">
+        <div class="s3-dim-bar"></div>
+        <div class="s3-dim-inner">
+          <p class="s3-dim-title">Provenance</p>
+          <p class="s3-dim-desc">Who measured this? With what instrument? Under which protocol?</p>
+        </div>
+      </div>
+      <div class="s3-dim-item">
+        <div class="s3-dim-bar"></div>
+        <div class="s3-dim-inner">
+          <p class="s3-dim-title">Uncertainty</p>
+          <p class="s3-dim-desc">How confident are we? Is this estimated, measured, or inferred?</p>
+        </div>
+      </div>
+      <div class="s3-dim-item">
+        <div class="s3-dim-bar"></div>
+        <div class="s3-dim-inner">
+          <p class="s3-dim-title">Context</p>
+          <p class="s3-dim-desc">In which clinical setting? Which coding system? Which version?</p>
+        </div>
+      </div>
+    </div>
+    <div class="s3-right">
+      <p class="s3-col-label">But a table only gives you:</p>
+      <div class="s3-grid-wrap">
+        <div class="s3-grid-vis">
+          <div class="s3-cell hdr"></div><div class="s3-cell hdr"></div><div class="s3-cell hdr"></div><div class="s3-cell hdr"></div><div class="s3-cell hdr"></div>
+          <div class="s3-cell hdr"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div>
+          <div class="s3-cell hdr"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div>
+          <div class="s3-cell hdr"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div>
+          <div class="s3-cell hdr"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div><div class="s3-cell"></div>
+        </div>
+        <div class="s3-grid-labels">
+          <span class="s3-axis-r">↑ ROWS</span>
+          <span class="s3-axis-c">COLUMNS →</span>
+        </div>
+      </div>
+      <p class="s3-equals">= 2&nbsp; dimensions</p>
+      <div class="s3-callout">
+        <p class="s3-callout-head">Every additional dimension of meaning must be flattened into those two.</p>
+        <p class="s3-callout-body">Time becomes a column. Hierarchy becomes a lookup table. Provenance disappears entirely. The richer the world, the more we compress.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 4 – Problem 2: Coarse reconstruction
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s4">
+  <h2>Problem 2: reconstructing our world from tables gives a coarse picture</h2>
+  <p class="s4-intro">A table can only store rows and columns. Every extra dimension — colour gradients, spatial relationships, fine detail — must be flattened into numbers, and the reconstruction is always an approximation.</p>
+
+  <div class="s4-bird-flow">
+
+    <!-- Panel 1: actual bird photo -->
+    <div class="s4-panel">
+      <div class="s4-photo-frame">
+        <img src="bird.jpg" alt="Bird photo — rich visual reality">
+      </div>
+      <div class="s4-panel-lbl">Rich visual reality</div>
+    </div>
+
+    <!-- Arrow 1 -->
+    <div class="s4-trans">
+      <div class="s4-trans-sym">→</div>
+      <div class="s4-trans-lbl">flatten<br>to table</div>
+    </div>
+
+    <!-- Panel 2: deck of tables -->
+    <div class="s4-panel">
+      <div class="s4-deck-wrap">
+        <!-- back cards -->
+        <div class="s4-deck-card back2"></div>
+        <div class="s4-deck-card back1"></div>
+        <!-- front card: channel_R.csv -->
+        <div class="s4-deck-card front">
+          <div class="s4-px-table-hd">channel_R.csv</div>
+          <table class="s4-px-table">
+            <thead>
+              <tr><th>x</th><th>y</th><th>R</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>82</td></tr>
+              <tr><td>1</td><td>0</td><td>79</td></tr>
+              <tr><td>2</td><td>0</td><td>85</td></tr>
+              <tr><td>3</td><td>0</td><td>91</td></tr>
+              <tr><td>4</td><td>0</td><td>105</td></tr>
+              <tr><td>5</td><td>0</td><td>198</td></tr>
+              <tr><td>6</td><td>0</td><td>188</td></tr>
+            </tbody>
+          </table>
+          <div class="s4-px-table-more">+ channel_G.csv &amp; channel_B.csv<br>7,990,272 rows each</div>
+        </div>
+      </div>
+      <div class="s4-panel-lbl">3 tables · 7.99 M rows each</div>
+    </div>
+
+    <!-- Arrow 2 -->
+    <div class="s4-trans">
+      <div class="s4-trans-sym">→</div>
+      <div class="s4-trans-lbl">reconstruct<br>from table</div>
+    </div>
+
+    <!-- Panel 3: pixelated reconstruction via canvas -->
+    <div class="s4-panel">
+      <div class="s4-pixel-frame">
+        <canvas id="s4-pixel-canvas" width="210" height="255"></canvas>
+      </div>
+      <div class="s4-panel-lbl">Coarse reconstruction — detail lost</div>
+    </div>
+
+  </div>
+  <p class="footnote">The richer the original, the coarser the reconstruction. A table preserves values — but loses gradients, context, and the relationships between pixels. The same happens to clinical data.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 5 – More structure → more formats
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s5">
+  <h2>More structure, more dimensions — and more formats</h2>
+  <p class="s5-intro">Relational databases gave us more expressive power: foreign keys, joins, normalisation. But this also kicked off an explosion in structured formats, each solving a different slice of the problem.</p>
+  <div class="s5-stages">
+
+    <div class="s5-stage">
+      <p class="s5-era" style="color:#3A5FA0">1970s – 1990s</p>
+      <div class="s5-head" style="background:#3A5FA0">Relational Databases</div>
+      <div class="s5-items">
+        <div class="s5-item"><div class="s5-dot" style="background:#3A5FA0"></div>Tables linked by foreign keys</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#3A5FA0"></div>SQL for queries</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#3A5FA0"></div>Schemas enforce structure</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#3A5FA0"></div>Single format, single vendor</div>
+      </div>
+    </div>
+
+    <div class="s5-stage">
+      <p class="s5-era" style="color:#28806A">1990s – 2000s</p>
+      <div class="s5-head" style="background:#28806A">File Exchange Formats</div>
+      <div class="s5-items">
+        <div class="s5-item"><div class="s5-dot" style="background:#28806A"></div>CSV &amp; TSV for portability</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#28806A"></div>XML for hierarchical data</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#28806A"></div>EDI for transaction data</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#28806A"></div>Each domain invents its own</div>
+      </div>
+    </div>
+
+    <div class="s5-stage">
+      <p class="s5-era" style="color:#5C3A00">2000s – 2010s</p>
+      <div class="s5-head" style="background:#5C3A00">Web &amp; API Data</div>
+      <div class="s5-items">
+        <div class="s5-item"><div class="s5-dot" style="background:#5C3A00"></div>JSON for REST APIs</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#5C3A00"></div>HTML + microdata</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#5C3A00"></div>Domain-specific schemas</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#5C3A00"></div>Version drift between APIs</div>
+      </div>
+    </div>
+
+    <div class="s5-stage">
+      <p class="s5-era" style="color:#7A0000">2010s – now</p>
+      <div class="s5-head" style="background:#7A0000">Specialist Formats</div>
+      <div class="s5-items">
+        <div class="s5-item"><div class="s5-dot" style="background:#7A0000"></div>FHIR for health IT</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#7A0000"></div>OWL / RDF for ontologies</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#7A0000"></div>Parquet / Arrow for analytics</div>
+        <div class="s5-item"><div class="s5-dot" style="background:#7A0000"></div>GraphQL, gRPC, Protobuf…</div>
+      </div>
+    </div>
+
+  </div>
+  <div class="s5-result">
+    The result: dozens of formats, hundreds of files, each making slightly different assumptions about the world.
+    Every new data source adds another dialect to an already crowded conversation.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 6 – The integration challenge
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s6">
+  <h2>Trying to consolidate all this data is daunting — if at all possible</h2>
+  <p class="s6-intro">Each organisation accumulates its own data landscape. When you try to answer a question that spans multiple systems — or multiple organisations — you encounter the full complexity of what was kept implicit.</p>
+  <div class="s6-cards">
+
+    <div class="s6-card">
+      <div class="s6-card-stripe" style="background:#003741"></div>
+      <div class="s6-icon-row"><span class="s6-icon" style="color:#003741">⊞</span></div>
+      <p class="s6-head">Many sources, many silos</p>
+      <p class="s6-body">Hospital A, Hospital B, research cohort, national registry, published literature — each has its own data, its own schema, its own access policy.<br><br>None was designed to talk to the others.</p>
+    </div>
+
+    <div class="s6-card">
+      <div class="s6-card-stripe" style="background:#009CB4"></div>
+      <div class="s6-icon-row"><span class="s6-icon" style="color:#009CB4">≠</span></div>
+      <p class="s6-head">Many formats, no common language</p>
+      <p class="s6-body">FHIR resources, OMOP tables, CSV extracts, OWL ontologies, REST APIs — each encodes the same clinical reality differently.<br><br>Translating between them requires expert knowledge that is rarely documented.</p>
+    </div>
+
+    <div class="s6-card">
+      <div class="s6-card-stripe" style="background:#990000"></div>
+      <div class="s6-icon-row"><span class="s6-icon" style="color:#990000">⌛</span></div>
+      <p class="s6-head">Many versions, silent drift</p>
+      <p class="s6-body">SNOMED releases twice a year, LOINC twice a year, ICD every few years. Each system in your landscape may be on a different version.<br><br>A valid match last year may no longer hold today.</p>
+    </div>
+
+  </div>
+  <p class="footnote">This is not a failure of individual systems — each was well-designed for its purpose. It is an emergent property of building data infrastructure without a shared semantic foundation.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 7 – Ambiguity: implicit knowledge
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s7">
+  <h2>The ambiguity problem: structured data hides implicit knowledge</h2>
+  <p class="s7-intro">When we create a table, we make dozens of decisions that go undocumented. The data consumer — human or machine — must guess what the creator intended. Let's revisit our clinical table from slide 2.</p>
+  <p class="s7-tbl-label">The same table from slide 2:</p>
+  <table class="data-table" style="font-size:0.8em">
+    <thead>
+      <tr><th>patient_id</th><th>date</th><th>diagnosis</th><th>value</th><th>unit</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>12345</td><td>2024-01-15</td><td>diabetes</td><td>7.2</td><td>HbA1c%</td></tr>
+      <tr><td>67890</td><td>2024-01-10</td><td>hypertension</td><td>140</td><td>mmHg</td></tr>
+    </tbody>
+  </table>
+  <div class="s7-annotations">
+
+    <div class="s7-ann" style="--ac:#003741">
+      <p class="s7-ann-col">patient_id</p>
+      <p class="s7-q">Which system issued this ID?</p>
+      <p class="s7-q">Is patient 12345 in Hospital A the same person as patient 12345 in Hospital B?</p>
+      <p class="s7-q">Is this a national ID (BSN), a local record number (MRN), or an internal ID?</p>
+    </div>
+
+    <div class="s7-ann" style="--ac:#28806A">
+      <p class="s7-ann-col">date</p>
+      <p class="s7-q">Date of what exactly? Measurement? Sample collection? Lab processing? Data entry?</p>
+      <p class="s7-q">Which timezone? (relevant for international studies)</p>
+    </div>
+
+    <div class="s7-ann" style="--ac:#5C3A00">
+      <p class="s7-ann-col">diagnosis</p>
+      <p class="s7-q">Which coding system? ICD-10? SNOMED CT? Free text? A local code?</p>
+      <p class="s7-q">Primary or secondary diagnosis?</p>
+      <p class="s7-q">Assigned by a clinician or an algorithm?</p>
+    </div>
+
+    <div class="s7-ann" style="--ac:#7A0000">
+      <p class="s7-ann-col">value</p>
+      <p class="s7-q">Without a unit, this number is meaningless.</p>
+      <p class="s7-q">Which instrument? Which measurement method? Which reference range?</p>
+    </div>
+
+    <div class="s7-ann" style="--ac:#5A1A6A">
+      <p class="s7-ann-col">unit</p>
+      <p class="s7-q">"HbA1c%" — which standard? NGSP and IFCC give different numeric results for the same blood sample.</p>
+      <p class="s7-q">Is this a standardised code (UCUM) or just free text?</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 8 – The Semantic Web
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s8">
+  <h2>The Semantic Web: making the implicit explicit</h2>
+  <p class="s8-intro">The Semantic Web is a W3C initiative to make data on the web machine-<em>understandable</em> — not just machine-readable. Its core insight is simple: if every concept has a unique address and every relationship has a standard form, ambiguity disappears.</p>
+  <div class="s8-pillars">
+
+    <div class="s8-pillar">
+      <div class="s8-stripe" style="background:#003741"></div>
+      <p class="s8-nr">01</p>
+      <p class="s8-sub" style="color:#003741">URI / IRI</p>
+      <p class="s8-head">Give every concept a unique address</p>
+      <div class="s8-div"></div>
+      <p class="s8-body">Instead of the string <code>"diabetes"</code>, use a web address that resolves to a formal definition:<br><br>
+        <code style="font-size:0.88em;color:#2244aa">http://snomed.info/id/73211009</code><br><br>
+        Anyone — human or machine — can look it up and get the same unambiguous concept.</p>
+    </div>
+
+    <div class="s8-pillar">
+      <div class="s8-stripe" style="background:#009CB4"></div>
+      <p class="s8-nr">02</p>
+      <p class="s8-sub" style="color:#009CB4">Subject – Predicate – Object</p>
+      <p class="s8-head">Describe all relationships as triples</p>
+      <div class="s8-div"></div>
+      <p class="s8-body">Every fact becomes a sentence with exactly three parts:<br><br>
+        <code style="font-size:0.85em;color:#009CB4">patient:12345 &nbsp;has-diagnosis&nbsp; snomed:73211009</code><br><br>
+        This single structure can express any relationship in any domain — and machines can process it without custom parsers.</p>
+    </div>
+
+    <div class="s8-pillar">
+      <div class="s8-stripe" style="background:#5C3A00"></div>
+      <p class="s8-nr">03</p>
+      <p class="s8-sub" style="color:#5C3A00">Linked Open Data</p>
+      <p class="s8-head">Link datasets together</p>
+      <p style="color:#5C3A00; font-size:0.80em; font-style:italic; margin:2px 0 0;">Unambiguous identifiers link datasets together</p>
+      <div class="s8-div"></div>
+      <p class="s8-body">When patient data, drug data, and gene data all use the same URIs, they automatically form a connected graph:<br><br>
+        <code style="font-size:0.85em;color:#5C3A00">patient → gene → protein → pathway → drug</code><br><br>
+        No joins. No ETL pipeline. Just follow the links.</p>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 9 – 5-star linked data
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s9">
+  <img src="https://www.w3.org/DesignIssues/diagrams/lod/597992118v2_350x350_Back.jpg"
+       alt="5-star linked data mug"
+       style="position:absolute; right:60px; bottom:60px;
+              height:280px; width:auto; opacity:0.55; pointer-events:none; z-index:0;">
+  <h2>From making data available to connecting data: 5-star linked data</h2>
+  <div class="star-steps">
+    <div class="star-step star-low">
+      <div class="star-rating">★</div>
+      <div class="star-content">
+        <p class="star-title">Findable &amp; accessible via web technology</p>
+        <p class="star-desc">Available via standard protocols (HTTP) — internally or externally. Licence is clear and explicitly documented. Findable, but barely machine-processable.</p>
+      </div>
+    </div>
+    <div class="star-step star-low">
+      <div class="star-rating">★★</div>
+      <div class="star-content">
+        <p class="star-title">Structured data</p>
+        <p class="star-desc">Data in a structured format such as Excel or a proprietary database dump. Readable, but the format is vendor-specific.</p>
+        <p class="star-example">Excel sheets · database exports</p>
+      </div>
+    </div>
+    <div class="star-step star-mid">
+      <div class="star-rating">★★★</div>
+      <div class="star-content">
+        <p class="star-title">Non-proprietary format</p>
+        <p class="star-desc">CSV, XML, or another format readable without a licence. Exchangeable, but the meaning of codes remains implicit.</p>
+        <p class="star-example">LOINC CSV · ATC XML · SNOMED RF2</p>
+      </div>
+    </div>
+    <div class="star-step star-high">
+      <div class="star-rating">★★★★</div>
+      <div class="star-content">
+        <p class="star-title">URIs as identifiers</p>
+        <p class="star-desc">Each concept gets a unique, globally resolvable URI. Ambiguity disappears: two systems pointing to the same URI mean the same concept.</p>
+        <p class="star-example">snomed:73211009 · loinc:2160-0</p>
+      </div>
+    </div>
+    <div class="star-step star-high">
+      <div class="star-rating">★★★★★</div>
+      <div class="star-content">
+        <p class="star-title">Linked to other data</p>
+        <p class="star-desc">Data is connected to external datasets via standardised relationships. Datasets link to each other — and can be queried together.</p>
+        <p class="star-example">→ The Semantic Web</p>
+      </div>
+    </div>
+  </div>
+  <p class="star-footer">Most datasets today sit at ★★ to ★★★. Moving to ★★★★★ requires two things: URIs as identifiers and a uniform exchange format. That is exactly what RDF provides.</p>
+  <p class="star-footer" style="margin-top:6px; border-top:none; padding-top:0;">
+    ☕ Original specification by Tim Berners-Lee:
+    <a href="https://www.w3.org/DesignIssues/LinkedData.html" style="color:#009CB4;">w3.org/DesignIssues/LinkedData.html</a>
+  </p>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 10 – RDF: the foundation
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s10">
+  <h2>RDF: the foundation of the Semantic Web</h2>
+  <p class="rdf2-intro">RDF (Resource Description Framework) is the W3C standard at the heart of the Semantic Web. It solves two fundamental problems at once.</p>
+  <div class="rdf2-grid">
+    <div>
+      <p class="rdf2-nr">01</p>
+      <p class="rdf2-prob-title">Format fragmentation</p>
+      <p class="rdf2-prob-body">Every data source speaks its own language — CSV, XML, JSON, SQL, OWL, API. Every integration requires a custom parser built from scratch.</p>
+      <p class="rdf2-arrow">↓</p>
+      <p class="rdf2-sol-label">Solution</p>
+      <p class="rdf2-sol-title">Everything is a triple</p>
+      <p class="rdf2-sol-body">RDF reduces all data to one structure: <strong>subject – predicate – object</strong>. Regardless of the original format, every fact is expressed as a relationship between two things.</p>
+      <pre class="triple-ex"><span class="t-s">patient:12345</span>  <span class="t-p">sct:has-finding</span>  <span class="t-o">snomed:73211009</span> .
+<span class="t-s">patient:12345</span>  <span class="t-p">rdfs:label</span>       <span class="t-o">"Patient 12345"</span><span class="t-c">@en</span> .
+<span class="t-s">snomed:73211009</span>  <span class="t-p">rdfs:label</span>    <span class="t-o">"Diabetes mellitus"</span><span class="t-c">@en</span> .
+<span class="t-s">snomed:73211009</span>  <span class="t-p">skos:closeMatch</span>  <span class="t-o">icd10:E11</span> .</pre>
+    </div>
+    <div class="rdf2-divider"></div>
+    <div>
+      <p class="rdf2-nr">02</p>
+      <p class="rdf2-prob-title">Ambiguity in meaning</p>
+      <p class="rdf2-prob-body">The code <code>'73211009'</code> is just a number. Which system? Which version? Two systems may use the same string for completely different concepts.</p>
+      <p class="rdf2-arrow">↓</p>
+      <p class="rdf2-sol-label">Solution</p>
+      <p class="rdf2-sol-title">Globally unique identifiers (IRIs)</p>
+      <p class="rdf2-sol-body">Every entity gets an IRI — a globally unique web address that can also be resolved: you can navigate to it and retrieve the formal definition.</p>
+      <pre class="triple-ex"><span class="t-c">"diabetes"</span>
+  → <span class="t-s">http://snomed.info/id/73211009</span>
+
+<span class="t-c">"patient ID 12345"</span>
+  → <span class="t-s">https://amsterdamumc.nl/patients/12345</span>
+
+<span class="t-c">"HbA1c measurement"</span>
+  → <span class="t-s">http://loinc.org/4548-4</span></pre>
+    </div>
+  </div>
+  <blockquote class="rdf2-quote">
+    <p>"People think RDF is a pain because it is complicated. The truth is even worse. RDF is painfully simplistic, but it allows you to work with real-world data and problems that are horribly complicated."</p>
+    <cite>— Dan Brickley</cite>
+  </blockquote>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 15 – The flexibility of RDF
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s15">
+  <p class="kicker">RDF &nbsp;·&nbsp; Flexibility</p>
+  <h2>The flexibility of RDF: triples, IRIs, and namespaces</h2>
+  <p class="s15-intro">RDF's power comes from three interlocking ideas. Together they make it possible to describe any domain, at any level of detail, in a way that is both machine-readable and globally interoperable.</p>
+  <div class="s15-blocks">
+
+    <div class="s15-block">
+      <div class="s15-block-hd" style="background:#003741">
+        <div class="s15-block-nr">01</div>
+        <div class="s15-block-title">The Triple</div>
+      </div>
+      <div class="s15-block-body">
+        Every fact is a subject–predicate–object triple. This single, universal structure can express any relationship in any domain — patient observations, gene functions, drug interactions, legal citations. No schema needed to start; you add what you know.
+        <code class="s15-block-code">:patient12345 &nbsp;:hasDiagnosis &nbsp;snomed:73211009 .</code>
+      </div>
+    </div>
+
+    <div class="s15-block">
+      <div class="s15-block-hd" style="background:#009CB4">
+        <div class="s15-block-nr">02</div>
+        <div class="s15-block-title">The IRI</div>
+      </div>
+      <div class="s15-block-body">
+        Every entity in a triple is identified by an IRI — a globally unique web address. IRIs eliminate ambiguity: two systems that use the same IRI mean the same thing. An IRI can be resolved in a browser to retrieve the formal definition of the concept.
+        <code class="s15-block-code">http://snomed.info/id/73211009</code>
+      </div>
+    </div>
+
+    <div class="s15-block">
+      <div class="s15-block-hd" style="background:#5C3A00">
+        <div class="s15-block-nr">03</div>
+        <div class="s15-block-title">The Namespace</div>
+      </div>
+      <div class="s15-block-body">
+        IRIs are grouped into namespaces — shared prefixes that identify who coined the term and in which context. A namespace is a commitment: every IRI in it follows the same conventions and can be understood as a family of related terms.
+        <code class="s15-block-code">snomed: &nbsp;&nbsp;http://snomed.info/id/<br>loinc: &nbsp;&nbsp;&nbsp;http://loinc.org/</code>
+      </div>
+    </div>
+
+  </div>
+  <div class="s15-note">
+    <strong>Why this matters:</strong> The choice of namespace determines how precisely you can describe your data. A coarse namespace gives you broad categories; a fine-grained namespace gives you the detail you need to distinguish subtly different concepts. The triple and the IRI are flexible by design — the namespace is where specificity lives.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 16 – Namespace specificity
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s16">
+  <p class="kicker">RDF &nbsp;·&nbsp; Namespaces</p>
+  <h2>Namespace choice determines the granularity of your description</h2>
+  <p class="s16-intro">One namespace can cover more or less detail than another. This is not a technical accident — it is a reflection of the ontological commitments that went into designing it. Choosing the right namespace is choosing how precisely you want to describe the world.</p>
+  <div class="s16-compare">
+
+    <div>
+      <p class="s16-col-lbl" style="color:#888">Coarse — broad categories, few distinctions</p>
+      <div class="s16-ns-item">
+        <span class="s16-ns-name" style="background:#888">ICD-10</span>
+        <p class="s16-ns-desc">Billing and administrative codes. Groups many clinical conditions into a single code. Designed for epidemiology and reimbursement, not research precision.</p>
+        <code class="s16-ns-ex">icd10:E11 &nbsp;→ "Type 2 diabetes mellitus" (entire spectrum)</code>
+      </div>
+      <div class="s16-ns-item">
+        <span class="s16-ns-name" style="background:#888">MeSH</span>
+        <p class="s16-ns-desc">Literature indexing terms. Useful for finding papers, but not granular enough to distinguish clinical subtypes or molecular mechanisms.</p>
+        <code class="s16-ns-ex">mesh:D003924 &nbsp;→ "Diabetes Mellitus, Type 2"</code>
+      </div>
+    </div>
+
+    <div>
+      <p class="s16-col-lbl" style="color:#003741">Fine-grained — specific concepts, rich hierarchy</p>
+      <div class="s16-ns-item">
+        <span class="s16-ns-name" style="background:#003741">SNOMED CT</span>
+        <p class="s16-ns-desc">Clinical terminology with hundreds of thousands of precisely defined concepts. Distinguishes aetiology, laterality, severity, and context. The right namespace for clinical decision support.</p>
+        <code class="s16-ns-ex">sct:44054006 &nbsp;→ "Diabetes mellitus type 2" (exact)<br>sct:420868002 &nbsp;→ "Disorder due to type 2 diabetes"</code>
+      </div>
+      <div class="s16-ns-item">
+        <span class="s16-ns-name" style="background:#009CB4">ChEBI / UniProt</span>
+        <p class="s16-ns-desc">Molecular-level namespaces. ChEBI distinguishes individual chemical entities; UniProt identifies specific protein isoforms. Essential for omics and pharmacology research.</p>
+        <code class="s16-ns-ex">chebi:17234 &nbsp;→ "glucose" (precise molecule)<br>uniprot:P35557 &nbsp;→ "Glucokinase, isoform 1"</code>
+      </div>
+    </div>
+
+  </div>
+  <div class="s16-callout">
+    <strong>There is no universally correct choice.</strong> A coarse namespace is fine for counting cases across a population. A fine-grained namespace is essential for integrating molecular and clinical data. The key insight: switching namespace later is possible — but requires explicit mapping work.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 11 – SPARQL: querying the Semantic Web
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s11">
+  <p class="kicker">SPARQL &nbsp;·&nbsp; Querying the Semantic Web</p>
+  <h2>SPARQL: asking questions in sentences</h2>
+
+  <div class="sbe-intro-layout">
+    <div>
+      <div class="sbe-hero">
+        English puts words in Subject → Verb → Object order.<br>
+        SPARQL puts data in Subject → Predicate → Object order.<br>
+        Once you see that, you can build any query — one sentence at a time.
+      </div>
+      <div class="sbe-ai">
+        <strong>Why this matters now:</strong> AI assistants can generate SPARQL from plain language. But to use that well — or to check whether it is correct — you need to think in sentences about your data yourself. "The gene is associated with asthma" is the sentence. The SPARQL follows naturally.
+      </div>
+      <div class="sbe-key-msg">
+        <strong>One sentence = one triple.</strong> To write a SPARQL query, you list the sentences that describe what you are looking for. Each sentence becomes a triple pattern. The query engine finds everything in the graph that matches.
+      </div>
+    </div>
+
+    <div class="sbe-svo-compare">
+      <div class="sbe-svo-col">
+        <h4>English</h4>
+        <div class="sbe-svo-lbl-row">
+          <span class="lbl-s">Subject</span>
+          <span class="lbl-p">Verb</span>
+          <span class="lbl-o">Object</span>
+        </div>
+        <div class="sbe-svo-row">
+          <div class="sbe-svo-en-s">The gene</div>
+          <div class="sbe-svo-en-p">is associated with</div>
+          <div class="sbe-svo-en-o">asthma</div>
+        </div>
+        <div class="sbe-svo-row">
+          <div class="sbe-svo-en-s">The gene</div>
+          <div class="sbe-svo-en-p">encodes</div>
+          <div class="sbe-svo-en-o">a protein</div>
+        </div>
+        <div class="sbe-svo-row">
+          <div class="sbe-svo-en-s">The protein</div>
+          <div class="sbe-svo-en-p">is located in</div>
+          <div class="sbe-svo-en-o">the cell membrane</div>
+        </div>
+      </div>
+      <div class="sbe-svo-col">
+        <h4>SPARQL</h4>
+        <div class="sbe-svo-lbl-row">
+          <span class="lbl-s">Subject</span>
+          <span class="lbl-p">Predicate</span>
+          <span class="lbl-o">Object</span>
+        </div>
+        <div class="sbe-svo-row">
+          <div class="sbe-svo-sp-s">?gene</div>
+          <div class="sbe-svo-sp-p">wdt:P2293</div>
+          <div class="sbe-svo-sp-o">wd:Q35869</div>
+        </div>
+        <div class="sbe-svo-row">
+          <div class="sbe-svo-sp-s">?gene</div>
+          <div class="sbe-svo-sp-p">wdt:P688</div>
+          <div class="sbe-svo-sp-o">?protein</div>
+        </div>
+        <div class="sbe-svo-row">
+          <div class="sbe-svo-sp-s">?protein</div>
+          <div class="sbe-svo-sp-p">wdt:P681</div>
+          <div class="sbe-svo-sp-o">?membrane</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE OWL – OWL & Reasoning
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-owl">
+  <p class="kicker">OWL &nbsp;·&nbsp; Knowledge Representation</p>
+  <h2>OWL: making knowledge formal enough to reason over</h2>
+  <p class="s-owl-intro">RDF lets you state facts. OWL lets you state <em>rules about facts</em> — and a <strong>reasoner</strong> can then automatically derive conclusions you never explicitly wrote down.</p>
+
+  <div class="s-owl-layout">
+
+    <!-- Left column: what OWL adds -->
+    <div>
+      <p class="s-owl-col-lbl">What OWL adds on top of RDF</p>
+
+      <div class="s-owl-box">
+        <div class="s-owl-box-hd" style="background:#003741">Classes &amp; subclasses</div>
+        <div class="s-owl-box-body">
+          Define hierarchies formally:<br>
+          <span class="s-owl-code">Hypertension rdfs:subClassOf CardiovascularDisease</span><br>
+          <span class="s-owl-code">Type2Diabetes rdfs:subClassOf MetabolicDisease</span><br>
+          Every patient with hypertension is <em>automatically</em> a cardiovascular patient.
+        </div>
+      </div>
+
+      <div class="s-owl-box">
+        <div class="s-owl-box-hd" style="background:#C2640A">Property restrictions</div>
+        <div class="s-owl-box-body">
+          Constrain what is allowed:<br>
+          <span class="s-owl-code">hasParent owl:maxCardinality 2</span><br>
+          <span class="s-owl-code">hasDiagnosis owl:someValuesFrom Disease</span><br>
+          Violations surface automatically — no validation script needed.
+        </div>
+      </div>
+
+      <div class="s-owl-box">
+        <div class="s-owl-box-hd" style="background:#5a5a5a">Equivalence &amp; disjointness</div>
+        <div class="s-owl-box-body">
+          <span class="s-owl-code">snomed:73211009 owl:equivalentClass icd10:E11</span><br>
+          <span class="s-owl-code">Alive owl:disjointWith Deceased</span><br>
+          Bridges vocabularies and catches logical contradictions.
+        </div>
+      </div>
+    </div>
+
+    <!-- Right column: inference example -->
+    <div>
+      <p class="s-owl-col-lbl">What a reasoner derives automatically</p>
+
+      <div class="s-owl-infer">
+        <div class="s-owl-infer-hd">Ontology axioms (stated once)</div>
+        <div class="s-owl-infer-section">
+          <div class="s-owl-infer-lbl">You write</div>
+          <div class="s-owl-triple">
+            <span class="s">Hypertension</span> <span class="p">subClassOf</span> <span class="o">CardiovascularDisease</span><br>
+            <span class="s">patient:042</span> <span class="p">rdf:type</span> <span class="o">Hypertension</span><br>
+            <span class="s">patient:042</span> <span class="p">rdf:type</span> <span class="o">Deceased</span><br>
+            <span class="s">patient:042</span> <span class="p">rdf:type</span> <span class="o">Alive</span>
+          </div>
+        </div>
+        <div class="s-owl-infer-section" style="background:#fff8f4">
+          <div class="s-owl-infer-lbl">Reasoner derives</div>
+          <div class="s-owl-inferred">
+            patient:042 rdf:type CardiovascularDisease <span class="s-owl-derived-lbl">inferred</span><br>
+            ⚠ patient:042 is both Alive and Deceased <span class="s-owl-derived-lbl" style="background:#990000">contradiction</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="s-owl-callout">
+        <strong>Used everywhere in biomedicine.</strong> SNOMED CT, the Human Phenotype Ontology, Gene Ontology, and ChEBI are all OWL ontologies. Reasoners classify patients into cohorts, propagate annotations up the hierarchy, and flag inconsistencies — automatically.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 12 – Generative AI & the Semantic Web
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-ai">
+  <p class="kicker">Looking Ahead &nbsp;·&nbsp; Generative AI</p>
+  <h2>LLMs and the Semantic Web: the gap is closing</h2>
+  <p class="s-ai-intro">SPARQL has always been closer to plain English than it looks — it follows the same Subject–Verb–Object order we use in sentences. Yet it is <em>perceived</em> as a technical barrier. Generative AI is changing that perception into reality.</p>
+  <div class="s-ai-layout">
+    <div>
+      <div class="s-ai-tension">
+        <div class="s-ai-side">
+          <div class="s-ai-side-hd" style="background:#003741">The argument: SPARQL thinks like a sentence</div>
+          <div class="s-ai-side-body">
+            Every SPARQL triple pattern maps directly to the way we talk. "The gene is associated with asthma" and the query pattern that retrieves it share exactly the same structure.
+            <div class="s-ai-svo" style="margin-top:10px">
+              <div class="s-ai-svo-s">Subject<br><small>?gene</small></div>
+              <div class="s-ai-svo-p">Predicate<br><small>wdt:P2293</small></div>
+              <div class="s-ai-svo-o">Object<br><small>wd:Q35869</small></div>
+            </div>
+          </div>
+        </div>
+        <div class="s-ai-side">
+          <div class="s-ai-side-hd" style="background:#900000">The reality: it is still perceived as difficult</div>
+          <div class="s-ai-side-body">
+            Prefixes, endpoints, property codes like <code>wdt:P2293</code>, the syntax around <code>SERVICE</code> and <code>FILTER</code> — the conceptual model is simple, but the surface form creates friction. Many researchers stop at "I'd need to learn SPARQL first."
+          </div>
+        </div>
+      </div>
+      <div class="s-ai-callout">
+        <strong>The shift:</strong> Generative AI can translate a plain-language question into a valid SPARQL query, run it against a live endpoint, and return structured results — without the user ever seeing the query. The Semantic Web becomes queryable in natural language.
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px;min-height:0">
+      <div class="s-ai-bridge">
+        <p class="s-ai-bridge-lbl">LLM as query translator</p>
+        <div class="s-ai-bridge-flow">
+          <span class="s-ai-nl">"Which genes are associated with diabetes?"</span>
+          <span class="s-ai-arr">→ LLM →</span>
+          <span class="s-ai-sp">SELECT ?gene WHERE {…}</span>
+          <span class="s-ai-arr">→ endpoint →</span>
+          <span style="font-size:0.78em;color:#A8C8D5">structured results</span>
+        </div>
+      </div>
+      <div style="background:#009CB4;padding:6px 12px;display:flex;align-items:baseline;gap:10px;flex-shrink:0">
+        <span style="font-weight:700;font-size:0.8em;color:#fff">chat.expasy.org</span>
+        <span style="font-size:0.6em;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.6)">SIB Swiss Institute of Bioinformatics &nbsp;·&nbsp; beta</span>
+      </div>
+      <div style="flex:1;min-height:0;overflow:hidden;border:1px solid #009CB4;position:relative">
+        <img src="screenshot_expasy_crop.png" alt="chat.expasy.org — ask biological questions in plain English, get SPARQL-backed answers"
+             style="width:100%;height:100%;object-fit:cover;object-position:0 0;display:block">
+      </div>
+      <p style="font-size:0.69em;color:#444;line-height:1.45;flex-shrink:0">Covers UniProt · OMA · Bgee · Rhea · SwissLipids — natural language in, structured biological data out. <strong style="color:#003741">LLMs hallucinate; knowledge graphs don't.</strong> The combination is more reliable than either alone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 13 – SPARQL endpoints, REST & tooling
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-endpoints">
+  <p class="kicker">SPARQL in Practice &nbsp;·&nbsp; Endpoints &amp; REST</p>
+  <h2>SPARQL is a web service — and tools already know how to render it</h2>
+  <p class="s-ep-intro" style="margin-bottom:10px">A SPARQL endpoint is just an HTTP service: send a query, get back JSON / CSV / TSV. No special driver needed — any browser, script, or notebook can call it directly.</p>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;flex:1;min-height:0">
+
+    <!-- WDQS -->
+    <div style="display:flex;flex-direction:column;gap:6px;min-height:0">
+      <div style="background:#900000;padding:6px 12px;display:flex;align-items:baseline;gap:10px;flex-shrink:0">
+        <span style="font-weight:700;font-size:0.8em;color:#fff">Wikidata Query Service</span>
+        <span style="font-size:0.6em;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.55)">query.wikidata.org &nbsp;·&nbsp; 12 billion triples</span>
+      </div>
+      <div style="flex:1;min-height:0;overflow:hidden;border:1px solid #ddd;position:relative">
+        <img src="screenshot_wdqs_crop.png" alt="Wikidata Query Service interface showing query editor and results table"
+             style="width:100%;height:100%;object-fit:cover;object-position:0 0;display:block">
+      </div>
+      <p style="font-size:0.69em;color:#666;line-height:1.45;flex-shrink:0">Auto-detects result type → one-click rendering as table, map, bubble chart, timeline, or image grid.</p>
+    </div>
+
+    <!-- QLever -->
+    <div style="display:flex;flex-direction:column;gap:6px;min-height:0">
+      <div style="background:#003741;padding:6px 12px;display:flex;align-items:baseline;gap:10px;flex-shrink:0">
+        <span style="font-weight:700;font-size:0.8em;color:#fff">QLever</span>
+        <span style="font-size:0.6em;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.55)">qlever.cs.uni-freiburg.de &nbsp;·&nbsp; sub-second on billions of triples</span>
+      </div>
+      <div style="flex:1;min-height:0;overflow:hidden;border:1px solid #ddd;position:relative">
+        <img src="screenshot_qlever_crop.png" alt="QLever interface showing fast SPARQL results over Wikidata"
+             style="width:100%;height:100%;object-fit:cover;object-position:0 0;display:block">
+      </div>
+      <p style="font-size:0.69em;color:#666;line-height:1.45;flex-shrink:0">High-performance engine powering endpoints over Wikidata, UniProt, PubChem. Same REST interface, same result formats.</p>
+    </div>
+
+  </div>
+  <div style="background:#111;color:#fff;padding:9px 14px;margin-top:10px;display:flex;align-items:center;gap:16px;flex-shrink:0">
+    <span style="font-size:0.62em;font-weight:700;text-transform:uppercase;letter-spacing:0.12em;color:#888;white-space:nowrap">Any endpoint via HTTP</span>
+    <code style="font-family:'Courier New',monospace;font-size:0.72em;color:#6baee0">https://query.wikidata.org/sparql<span style="color:#d4893a">?format=</span><span style="color:#5ba87d">json</span><span style="color:#d4893a">&amp;query=</span><span style="color:#5ba87d">SELECT…</span></code>
+    <span style="margin-left:auto;font-size:0.69em;color:#888">DBCLS SPARQLlist wraps queries as parametrised REST APIs → embeddable in any app</span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 13 – SPARQL results → analysis pipelines
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-pipeline">
+  <p class="kicker">SPARQL in Practice &nbsp;·&nbsp; Analysis Pipelines</p>
+  <h2>From knowledge graph to dataframe to analysis</h2>
+  <p class="s-pipe-intro">SPARQL query results are just tables — and tables slot directly into the analysis tools you already use. The only new step is fetching the data from an endpoint instead of loading a file.</p>
+
+  <div class="s-pipe-flow">
+    <div class="s-pipe-step">SPARQL query</div>
+    <span class="s-pipe-arr">→</span>
+    <div class="s-pipe-step alt">JSON / CSV / TSV</div>
+    <span class="s-pipe-arr">→</span>
+    <div class="s-pipe-step alt2">DataFrame</div>
+    <span class="s-pipe-arr">→</span>
+    <div class="s-pipe-step alt3">Visualise · Model · Publish</div>
+  </div>
+
+  <div class="s-pipe-cols">
+    <div class="s-pipe-col">
+      <div class="s-pipe-col-hd" style="background:#003741">Python &nbsp;·&nbsp; Jupyter Notebook</div>
+      <div class="s-pipe-code-block">
+<span class="cm"># fetch from any SPARQL endpoint</span>
+<span class="ck">from</span> SPARQLWrapper <span class="ck">import</span> SPARQLWrapper, JSON
+<span class="ck">import</span> pandas <span class="ck">as</span> pd
+
+sparql = SPARQLWrapper(<span class="cs">"https://query.wikidata.org/sparql"</span>)
+sparql.setQuery(<span class="cs">"""
+  SELECT ?gene ?geneLabel ?disease WHERE {
+    ?gene wdt:P2293 ?disease .
+    SERVICE wikibase:label { bd:serviceParam
+      wikibase:language "en" }
+  } LIMIT 100"""</span>)
+sparql.setReturnFormat(JSON)
+
+<span class="cv">results</span> = sparql.query().convert()
+<span class="cv">df</span> = pd.json_normalize(<span class="cv">results</span>[<span class="cs">"results"</span>][<span class="cs">"bindings"</span>])
+
+<span class="cm"># now it's a regular DataFrame</span>
+df.groupby(<span class="cs">"disease.value"</span>).count().plot()
+      </div>
+    </div>
+
+    <div class="s-pipe-col">
+      <div class="s-pipe-col-hd" style="background:#009CB4">R &nbsp;·&nbsp; RStudio / Quarto</div>
+      <div class="s-pipe-code-block">
+<span class="cm"># SPARQL package sends query, returns data.frame</span>
+<span class="ck">library</span>(SPARQL)
+<span class="ck">library</span>(ggplot2)
+
+endpoint &lt;- <span class="cs">"https://query.wikidata.org/sparql"</span>
+query    &lt;- <span class="cs">"SELECT ?gene ?disease WHERE {
+  ?gene wdt:P2293 ?disease .
+} LIMIT 200"</span>
+
+<span class="cv">res</span> &lt;- SPARQL(endpoint, query)
+<span class="cv">df</span>  &lt;- <span class="cv">res</span>$results   <span class="cm"># standard data.frame</span>
+
+<span class="cm"># plug straight into tidyverse / ggplot2</span>
+ggplot(<span class="cv">df</span>, aes(x = disease)) +
+  geom_bar() +
+  coord_flip()
+      </div>
+    </div>
+  </div>
+
+  <div class="s-pipe-bottom">
+    <strong>The workflow is familiar.</strong> You load data, clean it, analyse it, visualise it. The only difference is <em>where</em> the data comes from: instead of reading a CSV, you query a knowledge graph that already integrates gene, disease, drug, and patient data — without any manual join.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 14 – Data Shapes: verifying expectations
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s12">
+  <p class="kicker">Data Quality &nbsp;·&nbsp; Validation</p>
+  <h2>Data Shapes: documenting and verifying structural expectations</h2>
+  <div class="s12-layout">
+    <div>
+      <p class="s12-intro">RDF lets you say anything about anything — which is powerful, but also means nothing enforces that your data looks the way you expect. <strong>Data shapes</strong> are a layer on top of RDF that lets you write down exactly what you expect a valid piece of data to look like, and then automatically check whether your data meets those expectations.</p>
+      <p class="s12-intro" style="margin-top:-6px">Three technologies do this — at different levels of formality:</p>
+      <div class="s12-tools">
+        <div class="s12-tool" style="border-left-color:#009CB4">
+          <span class="s12-tool-name">ShEx</span>
+          <span class="s12-tool-desc"><strong>Shape Expressions</strong> — a compact, readable language for writing shapes. Well-suited for bioinformatics and Wikidata curation. Shapes look almost like grammar rules for RDF.</span>
+        </div>
+        <div class="s12-tool" style="border-left-color:#003741">
+          <span class="s12-tool-name">SHACL</span>
+          <span class="s12-tool-desc"><strong>Shapes Constraint Language</strong> — the W3C standard. Written in RDF itself, making it easy to store alongside the data it validates. Used widely in enterprise and health data contexts.</span>
+        </div>
+        <div class="s12-tool" style="border-left-color:#E89E00">
+          <span class="s12-tool-name">LinkML</span>
+          <span class="s12-tool-desc"><strong>Linked data Modelling Language</strong> — a higher-level schema language that can generate ShEx, SHACL, JSON Schema, and more from one source model. Great for designing data models from scratch.</span>
+        </div>
+      </div>
+      <p class="s12-note">You do not need to master all three. The important concept is the same in each: <em>write down what valid data looks like, and then check whether your data is valid.</em></p>
+    </div>
+    <div>
+      <div class="s12-box">
+        <p class="s12-box-lbl">A shape says: "a patient record must have…"</p>
+        <div class="s12-shape-row">
+          <span class="sc">:PatientShape</span> a <span class="sk">sh:NodeShape</span> ;<br>
+          &nbsp;&nbsp;<span class="sp2">sh:targetClass</span> <span class="sc">:Patient</span> ;<br>
+          &nbsp;&nbsp;<span class="sp2">sh:property</span> [<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="sp2">sh:path</span> <span class="sc">:hasID</span> ;<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="sp2">sh:minCount</span> <span class="so2">1</span> ;<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="sp2">sh:datatype</span> <span class="so2">xsd:string</span><br>
+          &nbsp;&nbsp;] .
+        </div>
+      </div>
+      <div class="s12-arr">↓ validate</div>
+      <div class="s12-valid">✓ &nbsp;patient:12345 &nbsp;→ &nbsp;CONFORMS</div>
+      <div class="s12-invalid">✗ &nbsp;patient:??? (no ID) &nbsp;→ &nbsp;VIOLATION</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 13 – What shapes allow
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s13">
+  <p class="kicker">Data Shapes &nbsp;·&nbsp; Four Use Cases</p>
+  <h2>What shapes allow you to do</h2>
+  <p class="s13-intro">A shape is more than a validator. It is a living document of the assumptions baked into your data model — and a tool for catching when those assumptions are broken.</p>
+  <div class="s13-grid">
+
+    <div class="s13-card">
+      <div class="s13-card-head" style="background:#003741">
+        <span class="s13-card-nr">01</span>
+        <span class="s13-card-title">Document design choices</span>
+      </div>
+      <div class="s13-card-body">
+        Every shape is also documentation. By writing down "a patient must have exactly one birth date of type <code>xsd:date</code>", you are recording a decision that would otherwise live only in someone's head or in a README nobody reads. Shapes make implicit contracts explicit.
+      </div>
+    </div>
+
+    <div class="s13-card">
+      <div class="s13-card-head" style="background:#009CB4">
+        <span class="s13-card-nr">02</span>
+        <span class="s13-card-title">Test if existing data fits expectations</span>
+      </div>
+      <div class="s13-card-body">
+        When you receive a new dataset — from a collaborator, a public repository, or an ETL pipeline — run it against your shapes before using it. Violations surface problems early: missing fields, wrong types, unexpected codes, values out of range.
+      </div>
+    </div>
+
+    <div class="s13-card">
+      <div class="s13-card-head" style="background:#5C3A00">
+        <span class="s13-card-nr">03</span>
+        <span class="s13-card-title">Regression testing after updates</span>
+      </div>
+      <div class="s13-card-body">
+        Data changes over time — new records are added, ontologies are updated, pipelines are revised. Re-running shape validation after any change tells you immediately whether the update broke something that used to be valid. Shapes turn data quality into something you can test repeatedly.
+      </div>
+    </div>
+
+    <div class="s13-card">
+      <div class="s13-card-head" style="background:#555">
+        <span class="s13-card-nr">04</span>
+        <span class="s13-card-title">Detect data errors and inconsistencies</span>
+      </div>
+      <div class="s13-card-body">
+        A patient with a diagnosis date before their birth date. A drug dose recorded as a string instead of a number. A required identifier that is missing. These are errors that queries and visualisations will silently propagate — shapes catch them at the source.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 14 – Validation: a balance act
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s14">
+  <p class="kicker">Data Shapes &nbsp;·&nbsp; Interpretation</p>
+  <h2>A validation error: data problem or model problem?</h2>
+  <p class="s14-intro">When a shape validation fails, it does not automatically tell you what to fix. A violation always has two possible explanations — and deciding which one is correct requires human judgement.</p>
+  <div class="s14-balance">
+
+    <div class="s14-side">
+      <div class="s14-side-lbl" style="background:#CC3333">The data is wrong</div>
+      <p class="s14-side-body">The shape correctly describes what the data <em>should</em> look like, and the data simply does not match. Something went wrong upstream: a field was left empty, a code was entered incorrectly, a unit was omitted, or a record was corrupted during transfer.</p>
+      <p class="s14-ex">patient:99999 &nbsp;:birthDate &nbsp;"unknown" .<br>→ expected xsd:date &nbsp;✗</p>
+      <p class="s14-side-body" style="color:#CC3333;font-weight:600;font-size:0.78em;">Fix: clean or correct the data.</p>
+    </div>
+
+    <div class="s14-mid">
+      <div style="width:2px;background:#ddd;flex:1"></div>
+      <span class="s14-vs">VS</span>
+      <div style="width:2px;background:#ddd;flex:1"></div>
+    </div>
+
+    <div class="s14-side">
+      <div class="s14-side-lbl" style="background:#003741">The shape is wrong</div>
+      <p class="s14-side-body">The data is actually correct — it reflects a real-world situation that the shape did not anticipate. The shape was written under assumptions that no longer hold, or was never complete enough to begin with. The model needs to be updated.</p>
+      <p class="s14-ex">patient:88888 &nbsp;:birthDate &nbsp;"ca. 1940" .<br>→ approximate date &nbsp;— valid in context</p>
+      <p class="s14-side-body" style="color:#003741;font-weight:600;font-size:0.78em;">Fix: revise the shape to accommodate reality.</p>
+    </div>
+
+  </div>
+  <div class="s14-callout">
+    <strong>Shape validation is always a balance act.</strong> A very strict shape catches more errors but rejects more valid data. A very permissive shape accepts everything but validates nothing. The right balance depends on your use case — and finding it is an ongoing, collaborative process between data modellers and data producers.
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 17 – Transferring between namespaces
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s17">
+  <p class="kicker">RDF &nbsp;·&nbsp; Interoperability</p>
+  <h2>Bridging namespaces: four approaches</h2>
+  <p class="s17-intro">Because different datasets use different namespaces, RDF provides — and the community has developed — several mechanisms to map between them. Each operates at a different level and serves a different purpose.</p>
+  <div class="s17-tools">
+
+    <div class="s17-tool">
+      <div class="s17-tool-hd" style="background:#003741">
+        <span class="s17-tool-name">SPARQL CONSTRUCT</span>
+        <span class="s17-tool-tag">Query-based transformation</span>
+      </div>
+      <div class="s17-tool-body">
+        A special type of SPARQL query that does not return a table of results but <em>generates new RDF triples</em>. You can use it to translate data from one namespace to another on the fly: match patterns using the source vocabulary, then emit triples using the target vocabulary.
+        <code class="s17-tool-ex">CONSTRUCT { ?p ex2:diagnose ?d } WHERE { ?p ex1:hasDiagnosis ?d }</code>
+      </div>
+    </div>
+
+    <div class="s17-tool">
+      <div class="s17-tool-hd" style="background:#009CB4">
+        <span class="s17-tool-name">ShapeMaps</span>
+        <span class="s17-tool-tag">Shape-driven selection &amp; mapping</span>
+      </div>
+      <div class="s17-tool-body">
+        A companion technology to ShEx. A ShapeMap selects which nodes in an RDF graph should conform to which shape, and can drive transformation pipelines: "take nodes of this type from namespace A and project them into the structure expected by namespace B." Useful for complex graph-to-graph conversions.
+      </div>
+    </div>
+
+    <div class="s17-tool">
+      <div class="s17-tool-hd" style="background:#5C3A00">
+        <span class="s17-tool-name">SSSOM</span>
+        <span class="s17-tool-tag">Simple Standard for Sharing Ontology Mappings</span>
+      </div>
+      <div class="s17-tool-body">
+        A table-based format for recording <em>mappings between identifiers</em> across ontologies. Each row states that concept A in namespace X is equivalent to (or broader/narrower than) concept B in namespace Y, with a confidence score and provenance. Designed for human curation and machine consumption.
+        <code class="s17-tool-ex">icd10:E11 &nbsp;skos:closeMatch &nbsp;sct:44054006 &nbsp;[confidence: 0.95]</code>
+      </div>
+    </div>
+
+    <div class="s17-tool">
+      <div class="s17-tool-hd" style="background:#555">
+        <span class="s17-tool-name">SKOS</span>
+        <span class="s17-tool-tag">Simple Knowledge Organization System</span>
+      </div>
+      <div class="s17-tool-body">
+        A W3C vocabulary for expressing concept schemes — hierarchies, synonyms, related terms, and cross-vocabulary links. <code>skos:exactMatch</code>, <code>skos:closeMatch</code>, <code>skos:broader</code> and <code>skos:narrower</code> let you declare relationships between terms in different namespaces directly in RDF, without a separate mapping file.
+        <code class="s17-tool-ex">snomed:73211009 &nbsp;skos:closeMatch &nbsp;icd10:E11 .</code>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE s-shexmap — ShExMap: What & Why
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-shexmap">
+  <p class="kicker">ShEx Map Extension &nbsp;·&nbsp; Schema Transformation</p>
+  <h2>Bridging incompatible RDF healthcare schemas</h2>
+  <div class="shxm-cols">
+    <div class="shxm-box problem">
+      <div class="shxm-box-hd">🔴 The problem</div>
+      <div class="shxm-box-body">
+        <ul style="padding-left:1.1em;">
+          <li>Healthcare data lives in many <strong>mutually incompatible vocabularies</strong>: FHIR RDF, openEHR, OMOP, domain-specific application models</li>
+          <li>Converting between them requires custom, brittle, hand-written scripts</li>
+          <li>No declarative way to state that <em>fhir:givenName</em> and <em>:given</em> refer to the same concept</li>
+          <li>Round-trip fidelity is hard to verify</li>
+        </ul>
+      </div>
+    </div>
+    <div class="shxm-box solution">
+      <div class="shxm-box-hd">🟢 ShExMap's answer</div>
+      <div class="shxm-box-body">
+        <ul style="padding-left:1.1em;">
+          <li>Annotate ShEx triple constraints with <span class="shxm-anno">%Map:{ variable %}</span> to name the value at that position</li>
+          <li><strong>Validate</strong> source RDF → extract a set of named variable bindings</li>
+          <li><strong>Materialize</strong> those bindings via a second annotated schema → generate target RDF</li>
+          <li>Schemas serve as both <strong>validators</strong> and <strong>transformation specifications</strong> — one artefact, two purposes</li>
+          <li>Bidirectional by design: FHIR→DAM and DAM→FHIR use the same pair of schemas</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footnote">shex.js Map extension · <a href="https://shex.io/">https://shex.io/</a></div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE s-shexmap-pipe — ShExMap Pipeline
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-shexmap-pipe">
+  <p class="kicker">ShEx Map Extension &nbsp;·&nbsp; Transform Pipeline</p>
+  <h2>Validate → Extract bindings → Materialize</h2>
+  <div class="shxp-steps">
+    <div class="shxp-step teal">
+      <div class="shxp-step-num">Step 1</div>
+      <div class="shxp-step-hd">📥 Input &amp; Validate</div>
+      <div class="shxp-step-body">
+        Source RDF is validated against the <strong>input schema</strong>. Each triple constraint carries a <code style="font-size:0.9em;">%Map:{…}</code> annotation naming the variable it populates.
+        <div class="shxp-code">
+          &lt;sysBP&gt; {<br>
+          &nbsp;&nbsp;fhir:value xsd:float<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxp-hl">%Map:{</span> <span class="shxp-var">bp:sysVal</span> <span class="shxp-hl">%}</span>;<br>
+          &nbsp;&nbsp;fhir:units xsd:string<br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxp-hl">%Map:{</span> <span class="shxp-var">bp:sysUnits</span> <span class="shxp-hl">%}</span><br>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="shxp-arrow">→</div>
+    <div class="shxp-step indigo">
+      <div class="shxp-step-num">Step 2</div>
+      <div class="shxp-step-hd">🗂 Variable Bindings</div>
+      <div class="shxp-step-body">
+        Successful validation yields a JSON object mapping each variable to its extracted value — the <strong>schema-neutral intermediate</strong>.
+        <div class="shxp-code">
+          {<br>
+          &nbsp;&nbsp;<span class="shxp-var">"bp:given"</span>: <span class="shxp-out">"Alice"</span>,<br>
+          &nbsp;&nbsp;<span class="shxp-var">"bp:family"</span>: <span class="shxp-out">"Walker"</span>,<br>
+          &nbsp;&nbsp;<span class="shxp-var">"bp:sysVal"</span>: <span class="shxp-out">110</span>,<br>
+          &nbsp;&nbsp;<span class="shxp-var">"bp:sysUnits"</span>: <span class="shxp-out">"mmHg"</span>,<br>
+          &nbsp;&nbsp;<span class="shxp-var">"bp:diaVal"</span>: <span class="shxp-out">70</span>, …<br>
+          }
+        </div>
+      </div>
+    </div>
+    <div class="shxp-arrow">→</div>
+    <div class="shxp-step green">
+      <div class="shxp-step-num">Step 3</div>
+      <div class="shxp-step-hd">📤 Materialize</div>
+      <div class="shxp-step-body">
+        The <strong>output schema</strong> — also annotated with <code style="font-size:0.9em;">%Map:{…}</code> — drives graph construction. The materializer places each bound value into its annotated position.
+        <div class="shxp-code">
+          &lt;BPunitsDAM&gt; {<br>
+          &nbsp;&nbsp;:name . <span class="shxp-hl">%Map:{</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxp-var">regex(/(?&lt;bp:family&gt;…),</span><br>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="shxp-var">(?&lt;bp:given&gt;…)/)</span><br>
+          &nbsp;&nbsp;<span class="shxp-hl">%}</span>; …<br>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footnote">The bindings object is the only data crossing schema boundaries — no domain knowledge required in the transformation layer.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE s-shexmap-ex — ShExMap BP Example
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-shexmap-ex">
+  <p class="kicker">ShEx Map Extension &nbsp;·&nbsp; Live Example</p>
+  <h2>FHIR RDF ⟷ Domain Application Model</h2>
+  <div class="shxe-cols">
+
+    <div class="shxe-panel fhir">
+      <div class="shxe-panel-lbl">① FHIR input RDF</div>
+      <div class="shxe-code">
+        &lt;tag:b0&gt;<br>
+        &nbsp;&nbsp;<span class="shxe-prop">fhir:subject</span> [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">fhir:givenName</span> <span class="shxe-val">"Alice"</span><span class="shxe-anno"> %Map:{bp:given%}</span>;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">fhir:familyName</span> <span class="shxe-val">"Walker"</span><span class="shxe-anno"> %Map:{bp:family%}</span><br>
+        &nbsp;&nbsp;];<br>
+        &nbsp;&nbsp;<span class="shxe-prop">fhir:component</span> [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">fhir:value</span> <span class="shxe-val">"110"^^xsd:float</span><span class="shxe-anno"> %Map:{bp:sysVal%}</span>;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">fhir:units</span> <span class="shxe-val">"mmHg"</span><span class="shxe-anno"> %Map:{bp:sysUnits%}</span><br>
+        &nbsp;&nbsp;]; …
+      </div>
+    </div>
+
+    <div class="shxe-arrow">⟶</div>
+
+    <div class="shxe-panel bind">
+      <div class="shxe-panel-lbl">② Extracted bindings</div>
+      <div class="shxe-code">
+        {<br>
+        &nbsp;&nbsp;<span class="shxe-anno">"bp:given"</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{ value: <span class="shxe-val">"Alice"</span> },<br>
+        &nbsp;&nbsp;<span class="shxe-anno">"bp:family"</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{ value: <span class="shxe-val">"Walker"</span> },<br>
+        &nbsp;&nbsp;<span class="shxe-anno">"bp:sysVal"</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{ value: <span class="shxe-val">"110"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;type: xsd:float },<br>
+        &nbsp;&nbsp;<span class="shxe-anno">"bp:sysUnits"</span>:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{ value: <span class="shxe-val">"mmHg"</span> }, …<br>
+        }
+      </div>
+    </div>
+
+    <div class="shxe-arrow">⟶</div>
+
+    <div class="shxe-panel dam">
+      <div class="shxe-panel-lbl">③ DAM output RDF</div>
+      <div class="shxe-code">
+        &lt;tag:dam_result&gt;<br>
+        &nbsp;&nbsp;<span class="shxe-key">:name</span> <span class="shxe-val">"Walker, Alice"</span>;<br>
+        &nbsp;&nbsp;<span class="shxe-key">:systolic</span> [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">:value</span> <span class="shxe-val">"110"^^xsd:float</span>;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">:units</span> <span class="shxe-val">"mmHg"</span><br>
+        &nbsp;&nbsp;];<br>
+        &nbsp;&nbsp;<span class="shxe-key">:diastolic</span> [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">:value</span> <span class="shxe-val">"70"^^xsd:float</span>;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="shxe-key">:units</span> <span class="shxe-val">"mmHg"</span><br>
+        &nbsp;&nbsp;].
+      </div>
+    </div>
+
+  </div>
+  <div class="footnote">The <em>regex()</em> annotation reconstructs <code>:name "Walker, Alice"</code> from the two separate name variables captured in FHIR. The same schema pair runs the inverse transform (DAM → FHIR) without modification.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE s-omop2fhir — OMOP2FHIR via Ontop
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-omop2fhir">
+  <p class="kicker">Real-world interoperability &nbsp;·&nbsp; Rowdy de Groot</p>
+  <h2>OMOP ↔ FHIR via virtual knowledge graphs (Ontop)</h2>
+  <div class="omop-cols">
+
+    <div class="omop-explain">
+      <div class="omop-lede">
+        Instead of physically converting OMOP CDM data to FHIR, <strong>Ontop</strong> creates a
+        <em>virtual RDF layer</em> via OBDA mappings — no ETL, no duplication.
+        Queries written in SPARQL span both worlds at once.
+      </div>
+      <div class="omop-steps">
+        <div class="omop-step fhir">
+          <div class="omop-step-lbl">① FHIR mapping (OBDA)</div>
+          Ontop OBDA file declares how OMOP CDM tables map to FHIR classes &amp; predicates
+          (<code>fhir:MedicationStatement</code>, <code>fhir:subject</code>, …)
+        </div>
+        <div class="omop-step omop">
+          <div class="omop-step-lbl">② OMOP concepts remain native</div>
+          OMOP's <code>concept</code> table is exposed directly as
+          <code>&lt;omop#Concept&gt;</code> RDF — drug codes, names, vocabularies intact
+        </div>
+        <div class="omop-step query">
+          <div class="omop-step-lbl">③ SPARQL joins both in one query</div>
+          A single query retrieves FHIR MedicationStatements and resolves
+          RxNorm codes to concept names via the OMOP concept graph — zero data movement
+        </div>
+      </div>
+      <div class="omop-credit">
+        Work by <strong>Rowdy de Groot</strong> — uses
+        <strong>Ontop</strong> (<a href="https://ontop-vkg.org/">ontop-vkg.org</a>)
+        as the OBDA engine bridging OMOP CDM and FHIR RDF
+      </div>
+    </div>
+
+    <div class="omop-code-panel">
+<span class="omop-cm"># OMOP_FHIR SPARQL — Rowdy de Groot</span><br>
+<br>
+<span class="omop-kw">PREFIX</span> fhir: <span class="omop-uri">&lt;http://hl7.org/fhir/&gt;</span><br>
+<span class="omop-kw">PREFIX</span> xsd:  <span class="omop-uri">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><br>
+<br>
+<span class="omop-kw">SELECT</span> <span class="omop-var">?medicationStatement ?patient</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-var">?rxnormCode ?conceptName ?startDate</span><br>
+<span class="omop-kw">WHERE</span> {<br>
+&nbsp;&nbsp;<span class="omop-cm"># FHIR MedicationStatement (from OBDA mapping)</span><br>
+&nbsp;&nbsp;<span class="omop-var">?medicationStatement</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-kw">a</span> <span class="omop-attr">fhir:MedicationStatement</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-attr">fhir:subject</span> <span class="omop-var">?patient</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-attr">fhir:medicationCodeableConcept</span> <span class="omop-var">?rxnormCode</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-attr">fhir:effectiveDateTime</span> <span class="omop-var">?startDate</span> .<br>
+<br>
+&nbsp;&nbsp;<span class="omop-cm"># Join OMOP concept table via drug_concept_id</span><br>
+&nbsp;&nbsp;<span class="omop-var">?concept</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-kw">a</span> <span class="omop-uri">&lt;http://www.ohdsi.org/omop#Concept&gt;</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-uri">&lt;omop#conceptId&gt;</span> <span class="omop-var">?rxnormCode</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="omop-uri">&lt;omop#conceptName&gt;</span> <span class="omop-var">?conceptName</span> .<br>
+<br>
+&nbsp;&nbsp;<span class="omop-cm"># Only RxNorm codes</span><br>
+&nbsp;&nbsp;<span class="omop-kw">FILTER</span> <span class="omop-attr">regex</span>(<span class="omop-attr">str</span>(<span class="omop-var">?rxnormCode</span>), <span class="omop-str">"^[0-9]+$"</span>)<br>
+}<br>
+<span class="omop-kw">LIMIT</span> 20
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE ARCH – Full-stack architecture diagram
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-arch">
+  <p class="kicker">Architecture &nbsp;·&nbsp; The Full Stack</p>
+  <h2>From raw tables to a reasoning knowledge graph</h2>
+
+  <div class="s-arch-wrap">
+
+    <!-- Layer 1: Raw data formats -->
+    <div class="s-arch-layer">
+      <div class="s-arch-layer-lbl">Raw data</div>
+      <div class="s-arch-row" style="flex:1">
+        <div class="s-arch-node raw">
+          <div class="s-arch-node-title">Tables / CSV</div>
+          <div class="s-arch-node-sub">Excel · databases</div>
+        </div>
+        <div class="s-arch-node raw">
+          <div class="s-arch-node-title">XML</div>
+          <div class="s-arch-node-sub">HL7 · FHIR bundles</div>
+        </div>
+        <div class="s-arch-node raw">
+          <div class="s-arch-node-title">JSON</div>
+          <div class="s-arch-node-sub">REST APIs · FHIR R4</div>
+        </div>
+        <div class="s-arch-node raw">
+          <div class="s-arch-node-title">Other formats</div>
+          <div class="s-arch-node-sub">OMOP · Parquet · TSV</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-arch-conn">
+      <div class="s-arch-conn-line">
+        <div class="s-arch-conn-arr">↓</div>
+        <div class="s-arch-conn-txt">Lift to triples — assign IRIs</div>
+      </div>
+    </div>
+
+    <!-- Layer 2: RDF -->
+    <div class="s-arch-layer">
+      <div class="s-arch-layer-lbl">Semantic foundation</div>
+      <div class="s-arch-row" style="flex:1">
+        <div class="s-arch-node rdf" style="flex:2">
+          <div class="s-arch-node-title">RDF Triples</div>
+          <div class="s-arch-node-sub">Subject · Predicate · Object</div>
+        </div>
+        <div class="s-arch-node rdf" style="flex:2">
+          <div class="s-arch-node-title">IRIs &amp; Namespaces</div>
+          <div class="s-arch-node-sub">snomed: · loinc: · schema: · wdt:</div>
+        </div>
+        <div class="s-arch-node bridge">
+          <div class="s-arch-node-title">Bridging</div>
+          <div class="s-arch-node-sub">CONSTRUCT · SSSOM · SKOS</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-arch-conn">
+      <div class="s-arch-conn-line">
+        <div class="s-arch-conn-arr">↓</div>
+        <div class="s-arch-conn-txt">Formalise &amp; constrain</div>
+      </div>
+    </div>
+
+    <!-- Layer 3: OWL + Shapes -->
+    <div class="s-arch-layer">
+      <div class="s-arch-layer-lbl">Knowledge layer</div>
+      <div class="s-arch-row" style="flex:1">
+        <div class="s-arch-node owl" style="flex:1.2">
+          <div class="s-arch-node-title">OWL Ontologies</div>
+          <div class="s-arch-node-sub">Classes · Properties · Axioms · Reasoning</div>
+        </div>
+        <div class="s-arch-node shape" style="flex:1.2">
+          <div class="s-arch-node-title">Shapes: SHACL · ShEx · LinkML</div>
+          <div class="s-arch-node-sub">Validate · Document · Regression-test</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-arch-conn">
+      <div class="s-arch-conn-line">
+        <div class="s-arch-conn-arr">↓</div>
+        <div class="s-arch-conn-txt">Query the graph</div>
+      </div>
+    </div>
+
+    <!-- Layer 4: SPARQL -->
+    <div class="s-arch-layer">
+      <div class="s-arch-layer-lbl">Query &amp; access</div>
+      <div class="s-arch-row" style="flex:1">
+        <div class="s-arch-node sparql">
+          <div class="s-arch-node-title">SPARQL</div>
+          <div class="s-arch-node-sub">SELECT · CONSTRUCT · ASK</div>
+        </div>
+        <div class="s-arch-node sparql">
+          <div class="s-arch-node-title">Wikidata QS</div>
+          <div class="s-arch-node-sub">query.wikidata.org</div>
+        </div>
+        <div class="s-arch-node sparql">
+          <div class="s-arch-node-title">QLever</div>
+          <div class="s-arch-node-sub">qlever.cs.uni-freiburg.de</div>
+        </div>
+        <div class="s-arch-node sparql">
+          <div class="s-arch-node-title">REST / SPARQLlist</div>
+          <div class="s-arch-node-sub">DBCLS · parameterised APIs</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="s-arch-conn">
+      <div class="s-arch-conn-line">
+        <div class="s-arch-conn-arr">↓</div>
+        <div class="s-arch-conn-txt">Analyse · reason · discover</div>
+      </div>
+    </div>
+
+    <!-- Layer 5: Applications -->
+    <div class="s-arch-layer">
+      <div class="s-arch-layer-lbl">Applications</div>
+      <div class="s-arch-row" style="flex:1">
+        <div class="s-arch-node app">
+          <div class="s-arch-node-title">R · Python · Jupyter</div>
+          <div class="s-arch-node-sub">DataFrames · Visualisation</div>
+        </div>
+        <div class="s-arch-node app">
+          <div class="s-arch-node-title">AI / LLMs</div>
+          <div class="s-arch-node-sub">chat.expasy.org · NL→SPARQL</div>
+        </div>
+        <div class="s-arch-node app">
+          <div class="s-arch-node-title">Dashboards</div>
+          <div class="s-arch-node-sub">Reports · Decision support</div>
+        </div>
+        <div class="s-arch-node app">
+          <div class="s-arch-node-title">Federated analysis</div>
+          <div class="s-arch-node-sub">Multi-site · Cross-domain</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 18 – Conclusion
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s18">
+  <p class="kicker" style="color:#7BBFCC">Conclusion</p>
+  <h2>What we covered — and why it matters</h2>
+  <div class="s18-points">
+    <div class="s18-point">
+      <div class="s18-dot"></div>
+      <p class="s18-text"><strong>Data has limits.</strong> Spreadsheets and relational databases flatten a multi-dimensional world into two dimensions — and that compression causes ambiguity, integration problems, and lost knowledge.</p>
+    </div>
+    <div class="s18-point">
+      <div class="s18-dot"></div>
+      <p class="s18-text"><strong>The Semantic Web offers a way out.</strong> RDF expresses facts as triples. IRIs eliminate ambiguity. Namespaces organise knowledge. SPARQL queries traverse the resulting graph without custom parsers or ETL pipelines.</p>
+    </div>
+    <div class="s18-point">
+      <div class="s18-dot"></div>
+      <p class="s18-text"><strong>Shapes add discipline.</strong> ShEx, SHACL and LinkML let you document your data model, validate incoming data, and catch regressions — turning data quality from a conversation into a test suite.</p>
+    </div>
+    <div class="s18-point">
+      <div class="s18-dot"></div>
+      <p class="s18-text"><strong>Namespace choice is a design decision.</strong> The granularity of the namespace determines how precisely you can describe your domain. Too coarse and you lose detail; too fine and you gain complexity. The right choice depends on your use case.</p>
+    </div>
+    <div class="s18-point">
+      <div class="s18-dot"></div>
+      <p class="s18-text"><strong>Bridging is possible.</strong> SPARQL CONSTRUCT, ShapeMaps, SSSOM and SKOS provide principled ways to translate between namespaces — making it possible to integrate datasets that were built independently, in different communities, for different purposes.</p>
+    </div>
+    <div class="s18-point">
+      <div class="s18-dot"></div>
+      <p class="s18-text"><strong>Virtual knowledge graphs skip the ETL entirely.</strong> Ontop-style OBDA mappings expose relational data (e.g. OMOP CDM) as RDF on-the-fly — SPARQL queries can then span FHIR and OMOP simultaneously without moving or duplicating a single row.</p>
+    </div>
+  </div>
+  <p class="s18-closing">The Semantic Web is not a silver bullet. But it is the most principled foundation we have for building data systems that remain understandable, interoperable, and extensible over time.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SLIDE 22 – Thank you
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-thankyou">
+  <img src="amumc_icon.png" alt="Amsterdam UMC"
+       style="position:absolute;top:32px;right:48px;height:56px;width:auto;opacity:0.9">
+  <h1 class="ty-big">Thank you.</h1>
+  <p class="ty-sub">Questions, comments, and collaborations are very welcome.</p>
+  <div class="ty-sep"></div>
+  <div class="ty-contact">
+    <p class="ty-line">
+      <span class="ty-bar ty-email-bar"></span>
+      a.s.waagmeester@amsterdamumc.nl
+    </p>
+    <p class="ty-line">
+      <span class="ty-bar ty-orcid-bar"></span>
+      ORCID &nbsp;0000-0001-9773-4008
+    </p>
+    <p class="ty-line">
+      <span class="ty-bar ty-url-bar"></span>
+      Amsterdam UMC
+    </p>
+  </div>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     DETAIL SLIDES  (one per main slide)
+     Add more with data-parent matching the main slide id
+     ═══════════════════════════════════════════════ -->
+
+<section class="slide detail-slide" id="s1-d1" data-parent="s1">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Title slide</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📋</div>
+    <p><strong>Agenda overview</strong><br>
+    This webinar covers: why tables fall short → the Semantic Web solution → RDF, namespaces &amp; SPARQL → OWL &amp; shapes → schema transformation with ShExMap → virtual knowledge graphs (Ontop) → full-stack architecture.<br><br>
+    <em>Estimated duration: 45 minutes including Q&amp;A.</em></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s2-d1" data-parent="s2">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Data in rows and columns</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🗃️</div>
+    <p><strong>Discussion points</strong><br>
+    Ask the audience: how many separate spreadsheets or databases does your institution maintain for the same patient population? What happens when you try to merge them?<br><br>
+    <em>Key tension:</em> tables are excellent for storage and retrieval within a known schema, but terrible at expressing relationships that cross row or table boundaries — which is exactly what clinical and research questions demand.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s3-d1" data-parent="s3">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Problem 1: Dimensionality</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📐</div>
+    <p><strong>Concrete example: a blood pressure reading</strong><br>
+    A single measurement involves: patient identity, device used, body position, time of day, which arm, systolic value, diastolic value, unit, reference range, recording clinician, and clinical context. A single row with columns <code>bp_sys</code> and <code>bp_dia</code> captures two numbers and loses everything else.<br><br>
+    <em>Follow-up question:</em> What dimensions does your data lose that matter most for your research questions?</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s4-d1" data-parent="s4">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Problem 2: Coarse reconstruction</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🧩</div>
+    <p><strong>Why joins are not enough</strong><br>
+    Foreign keys connect rows, but they encode relationships as integers rather than as named, typed predicates. The meaning of a join is implicit in the query, not in the data. This means:<br><br>
+    • The same data can be joined differently by different analysts<br>
+    • Joins break silently when schemas change<br>
+    • There is no machine-readable record of <em>why</em> two entities are connected<br><br>
+    <em>RDF's answer:</em> every relationship is a named, typed triple — the predicate carries the semantics, not the query.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s5-d1" data-parent="s5">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">More structure, more formats</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📂</div>
+    <p><strong>The format landscape in healthcare data</strong><br>
+    Each format was designed for a specific purpose and community:<br><br>
+    • <strong>HL7 v2</strong> — messaging between hospital systems (1987, still dominant)<br>
+    • <strong>FHIR R4</strong> — REST-first, JSON/XML/RDF, modern APIs<br>
+    • <strong>OMOP CDM</strong> — standardised observational research, large cohorts<br>
+    • <strong>openEHR</strong> — clinical archetypes, vendor-neutral EHR modelling<br>
+    • <strong>DICOM</strong> — medical imaging metadata<br><br>
+    <em>The problem:</em> no single format covers all use cases, so organisations end up maintaining all of them simultaneously.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s6-d1" data-parent="s6">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Integration challenge</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔗</div>
+    <p><strong>Case study: multi-site rare disease cohort</strong><br>
+    Site A uses OMOP CDM. Site B uses openEHR archetypes. Site C exports custom CSV. Each encodes the same phenotype concept differently. A federated query requires:<br><br>
+    1. Mapping each local concept to a shared vocabulary (SNOMED / HPO)<br>
+    2. Harmonising date formats, units, and null conventions<br>
+    3. Agreeing on a common patient pseudonymisation scheme<br><br>
+    <em>With RDF + shared ontologies, steps 1–2 become a one-time declaration rather than per-query transformation code.</em></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s7-d1" data-parent="s7">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Ambiguity in data</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">❓</div>
+    <p><strong>The "glucose" problem</strong><br>
+    The string <code>"glucose"</code> appears in at least four distinct senses across lab systems:<br><br>
+    • Plasma glucose (fasting) — LOINC 1558-6<br>
+    • Plasma glucose (random) — LOINC 2345-7<br>
+    • Urine glucose — LOINC 2349-9<br>
+    • CSF glucose — LOINC 2342-4<br><br>
+    A system that stores the label <code>"glucose"</code> without the LOINC code conflates all four. Downstream queries will silently return incorrect results — with no error or warning.<br><br>
+    <em>IRIs eliminate this: each concept has one globally unique identifier with a resolvable definition.</em></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s8-d1" data-parent="s8">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">The Semantic Web</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🌐</div>
+    <p><strong>Historical context</strong><br>
+    Tim Berners-Lee, James Hendler and Ora Lassila published "The Semantic Web" in <em>Scientific American</em> in May 2001 — describing a web in which machines could understand the meaning of content, not just its structure.<br><br>
+    The key W3C standards that followed: RDF (2004), OWL (2004), SPARQL (2008), RDF 1.1 (2014), SHACL (2017).<br><br>
+    <em>Further reading:</em> <a href="https://www.scientificamerican.com/article/the-semantic-web/" style="color:#009CB4;">Scientific American, May 2001</a></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s9-d1" data-parent="s9">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">5-star linked data</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body">
+    <div style="align-self:flex-start; width:100%; font-size:0.88em; line-height:1.7; color:#333;">
+      <p style="font-weight:700; font-size:1.05em; margin-bottom:14px;">Further reading</p>
+
+      <div style="border-left:4px solid #009CB4; background:#EEF6F5; padding:12px 16px; margin-bottom:14px;">
+        <p style="margin-bottom:4px;">
+          <a href="https://www.w3.org/DesignIssues/LinkedData.html" style="color:#009CB4; font-weight:700;">
+            w3.org/DesignIssues/LinkedData.html
+          </a>
+        </p>
+        <p style="color:#555;">Tim Berners-Lee's original design note outlining the four core principles for publishing Linked Data — use URIs as identifiers, make them HTTP URIs, serve useful information when looked up, and include links to other data. Also the source of the five-star rating system shown on this slide.</p>
+      </div>
+
+      <div style="border-left:4px solid #E89E00; background:#FDF6E3; padding:12px 16px; margin-bottom:14px;">
+        <p style="margin-bottom:4px;">
+          <a href="https://www.w3.org/DesignIssues/BagOfChips.html" style="color:#B8860B; font-weight:700;">
+            w3.org/DesignIssues/BagOfChips.html
+          </a>
+        </p>
+        <p style="color:#555;">TBL explains that Linked Data works best when multiple vocabularies are combined and consumers simply ignore what they don't understand — just like a chip bag label that contains nutrition facts, barcodes, and allergen warnings for different audiences simultaneously.</p>
+      </div>
+
+      <div style="border-left:4px solid #6AB650; background:#F2F9EE; padding:12px 16px;">
+        <p style="margin-bottom:4px;">
+          <a href="https://5stardata.info/en/" style="color:#4a8a30; font-weight:700;">
+            5stardata.info/en/
+          </a>
+        </p>
+        <p style="color:#555;">A practical companion site to TBL's five-star scheme — shows concrete examples at each star level along with the costs and benefits of moving up, helping organisations decide where to invest their data publishing effort.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide detail-slide" id="s10-d1" data-parent="s10">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">RDF: the foundation</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body">
+    <div style="align-self:flex-start; width:100%; font-size:0.88em; line-height:1.7; color:#333;">
+      <p style="font-weight:700; font-size:1.05em; margin-bottom:10px;">RDF serialisation formats</p>
+      <p style="margin-bottom:10px;">The same set of triples can be written in several syntaxes. The meaning is identical — only the notation differs:</p>
+      <ul style="padding-left:1.4em; margin-bottom:14px;">
+        <li style="margin-bottom:5px;"><strong>Turtle</strong> — compact, human-readable. The most common format for writing RDF by hand.</li>
+        <li style="margin-bottom:5px;"><strong>JSON-LD</strong> — RDF embedded in JSON. Easy for web developers; used by schema.org.</li>
+        <li style="margin-bottom:5px;"><strong>N-Triples</strong> — one triple per line, no prefixes. Simple to parse programmatically.</li>
+        <li style="margin-bottom:5px;"><strong>RDF/XML</strong> — the original W3C syntax. Verbose but widely supported in legacy tools.</li>
+      </ul>
+      <p style="margin-bottom:6px;">Further reading — Chapter 5 of <em>Validating RDF Data</em> covers the RDF data model in detail:</p>
+      <p><a href="https://book.validatingrdf.com/bookHtml005.html" style="color:#009CB4; font-weight:700;">book.validatingrdf.com/bookHtml005.html</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="slide detail-slide" id="s11-d1" data-parent="s11">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">SPARQL</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔍</div>
+    <p><strong>SPARQL query types</strong><br>
+    • <strong>SELECT</strong> — return a table of matching variable bindings<br>
+    • <strong>CONSTRUCT</strong> — return a new RDF graph built from matched patterns<br>
+    • <strong>ASK</strong> — return true/false whether a pattern exists<br>
+    • <strong>DESCRIBE</strong> — return all known triples about a resource<br><br>
+    <em>Try it:</em> <a href="https://query.wikidata.org/" style="color:#009CB4;">query.wikidata.org</a> — a live SPARQL endpoint over 100 M+ statements, with autocomplete and example queries for biomedical data.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="sowl-d1" data-parent="s-owl">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">OWL &amp; Reasoning</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🦉</div>
+    <p><strong>Open-world vs. closed-world assumption</strong><br>
+    OWL uses the <em>open-world assumption</em>: the absence of a fact does not mean it is false — it may simply be unknown. This is the right assumption for distributed linked data where no single source is complete.<br><br>
+    Relational databases use the <em>closed-world assumption</em>: if it is not in the database, it does not exist.<br><br>
+    <strong>Reasoners:</strong> HermiT, Pellet, ELK (fast, scalable for OWL EL profile used by SNOMED CT and Gene Ontology).<br><br>
+    <em>Rule of thumb:</em> use SPARQL to find data; use a reasoner to infer new data from axioms.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="sai-d1" data-parent="s-ai">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">LLMs and the Semantic Web</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🤖</div>
+    <p><strong>Why grounding LLMs in knowledge graphs matters</strong><br>
+    LLMs generate plausible text — they do not retrieve verified facts. When asked about a gene–disease association, an LLM may confabulate a citation. A KG-grounded system like <a href="https://chat.expasy.org/" style="color:#009CB4;">chat.expasy.org</a> constrains the answer to triples that are actually present in UniProt / Bgee / OMA.<br><br>
+    <strong>The complementary roles:</strong><br>
+    • LLM — natural language understanding, query generation, explanation<br>
+    • Knowledge graph — ground truth, provenance, structured retrieval<br><br>
+    <em>Active research area:</em> retrieval-augmented generation (RAG) over SPARQL endpoints.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="sep-d1" data-parent="s-endpoints">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">SPARQL endpoints &amp; REST</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🌐</div>
+    <p><strong>Public biomedical SPARQL endpoints</strong><br>
+    • <a href="https://query.wikidata.org/" style="color:#009CB4;">query.wikidata.org</a> — general knowledge including genes, diseases, drugs<br>
+    • <a href="https://sparql.uniprot.org/" style="color:#009CB4;">sparql.uniprot.org</a> — protein sequences and annotations<br>
+    • <a href="https://www.ebi.ac.uk/rdf/services/sparql" style="color:#009CB4;">ebi.ac.uk/rdf/services/sparql</a> — EBI RDF platform<br>
+    • <a href="https://qlever.cs.uni-freiburg.de/" style="color:#009CB4;">qlever.cs.uni-freiburg.de</a> — high-speed engine for very large graphs<br><br>
+    <strong>SPARQLlist</strong> wraps any SPARQL query as a parameterised REST API — useful for building dashboards or connecting to BI tools without custom middleware.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="spipe-d1" data-parent="s-pipeline">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Knowledge graph → pipelines</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📊</div>
+    <strong>Minimal Python pipeline</strong><br><br>
+    <code style="font-size:0.85em; background:#f5f5f5; padding:2px 6px;">pip install SPARQLWrapper pandas</code><br><br>
+    <pre style="font-size:0.78em; background:#f5f5f5; padding:10px; border-radius:3px; line-height:1.6; overflow:auto;">from SPARQLWrapper import SPARQLWrapper, JSON
+import pandas as pd
+
+sparql = SPARQLWrapper("https://query.wikidata.org/sparql")
+sparql.setQuery("""SELECT ?gene ?geneLabel WHERE {
+  ?gene wdt:P31 wd:Q7187 .
+  SERVICE wikibase:label { bd:serviceParam
+    wikibase:language "en" . }
+} LIMIT 10""")
+sparql.setReturnFormat(JSON)
+results = sparql.query().convert()
+df = pd.json_normalize(results["results"]["bindings"])
+print(df[["gene.value","geneLabel.value"]])</pre>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s12-d1" data-parent="s12">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Data Shapes</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔷</div>
+    <p><strong>ShEx vs. SHACL — the same shape in two languages</strong><br><br>
+    <strong>ShEx (Shape Expressions):</strong><br>
+    <code style="font-size:0.82em; background:#f5f5f5; padding:4px 8px; display:block; margin:6px 0; line-height:1.6;">
+    &lt;Patient&gt; { fhir:birthDate xsd:date ; fhir:name xsd:string + }
+    </code>
+    <strong>SHACL (Shapes Constraint Language):</strong><br>
+    <code style="font-size:0.82em; background:#f5f5f5; padding:4px 8px; display:block; margin:6px 0; line-height:1.6;">
+    ex:PatientShape a sh:NodeShape ; sh:targetClass fhir:Patient ;<br>
+    &nbsp;&nbsp;sh:property [ sh:path fhir:birthDate ; sh:datatype xsd:date ] .
+    </code>
+    <em>ShEx is more concise for schema authoring; SHACL integrates directly into SPARQL-based tooling. Both can validate the same RDF data.</em></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s13-d1" data-parent="s13">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">What shapes allow</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">✅</div>
+    <p><strong>Real-world example: Wikidata gene curation</strong><br>
+    The <a href="https://www.wikidata.org/wiki/Wikidata:WikiProject_Genes" style="color:#009CB4;">Wikidata WikiProject Genes</a> uses ShEx shapes to validate every gene item before it is accepted into the knowledge base. The shape enforces:<br><br>
+    • At least one Ensembl gene ID (P594)<br>
+    • A genomic start and end position (P644, P645)<br>
+    • A chromosomal location (P1057)<br>
+    • An NCBI gene ID (P351)<br><br>
+    Any item missing a required property fails validation with a clear report pointing to the exact missing triple. This turned data quality from a manual review process into an automated gate.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s14-d1" data-parent="s14">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Validation balance act</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">⚖️</div>
+    <p><strong>Iterating on a shape: a worked example</strong><br>
+    Initial shape requires <code>fhir:birthDate xsd:date</code>. First run against production data: 3 % of records fail — they contain <code>"ca. 1940"</code> (approximate birth year for elderly patients).<br><br>
+    <strong>Options:</strong><br>
+    1. Mark those records as data errors and correct them → loses valid clinical information<br>
+    2. Relax the shape to allow <code>xsd:gYear</code> in addition to <code>xsd:date</code> → preserves the information<br>
+    3. Add a separate property <code>:approximateBirthYear xsd:gYear</code> → explicit modelling<br><br>
+    <em>The right answer depends on the downstream use case. Validation forces the conversation that should have happened at data model design time.</em></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s15-d1" data-parent="s15">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">RDF flexibility</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🐢</div>
+    <p><strong>Turtle syntax in 5 minutes</strong><br>
+    The most human-readable RDF serialisation:<br><br>
+    <code style="font-size:0.82em; background:#f5f5f5; padding:8px 12px; display:block; line-height:1.8; border-radius:3px;">
+    @prefix sct: &lt;http://snomed.info/id/&gt; .<br>
+    @prefix : &lt;https://example.org/patients/&gt; .<br><br>
+    :p12345 a sct:116154003 ;           # is-a Patient<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sct:has-finding sct:73211009 ; # Diabetes mellitus<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;rdfs:label "Patient 12345"@en .
+    </code><br>
+    <em>IRI dereferencing:</em> navigate to <code>http://snomed.info/id/73211009</code> in a browser to retrieve the formal SNOMED CT concept definition.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s16-d1" data-parent="s16">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Namespace specificity</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🎯</div>
+    <strong>Choosing the right namespace for your use case</strong><br><br>
+    <table style="font-size:0.9em; border-collapse:collapse; width:100%;">
+      <tr style="background:#f0f0f0;">
+        <th style="text-align:left;padding:5px 8px;">Use case</th>
+        <th style="text-align:left;padding:5px 8px;">Recommended</th>
+        <th style="text-align:left;padding:5px 8px;">Why</th>
+      </tr>
+      <tr><td style="padding:5px 8px;">Hospital billing</td><td style="padding:5px 8px;">ICD-10</td><td style="padding:5px 8px;">Statutory requirement</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:5px 8px;">Clinical decision support</td><td style="padding:5px 8px;">SNOMED CT</td><td style="padding:5px 8px;">Clinical precision, hierarchy</td></tr>
+      <tr><td style="padding:5px 8px;">Literature search</td><td style="padding:5px 8px;">MeSH</td><td style="padding:5px 8px;">PubMed index alignment</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:5px 8px;">Rare disease phenotypes</td><td style="padding:5px 8px;">HPO</td><td style="padding:5px 8px;">Structured phenotype hierarchy</td></tr>
+      <tr><td style="padding:5px 8px;">Drug compounds</td><td style="padding:5px 8px;">ChEBI / RxNorm</td><td style="padding:5px 8px;">Chemical precision</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:5px 8px;">Lab observations</td><td style="padding:5px 8px;">LOINC</td><td style="padding:5px 8px;">Universal lab coding standard</td></tr>
+    </table>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s17-d1" data-parent="s17">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Bridging namespaces</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🌉</div>
+    <p><strong>SSSOM mapping file example</strong><br>
+    Simple Standard for Sharing Ontological Mappings (SSSOM) uses a TSV header + rows:<br><br>
+    <code style="font-size:0.78em; background:#f5f5f5; padding:8px 10px; display:block; line-height:1.7; border-radius:3px;">
+    subject_id &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;predicate_id &nbsp;&nbsp;&nbsp;object_id<br>
+    sct:73211009 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skos:exactMatch &nbsp;icd10:E11<br>
+    sct:44054006 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skos:closeMatch &nbsp;mesh:D003924<br>
+    chebi:17234 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;skos:exactMatch &nbsp;uniprot:glucose
+    </code><br>
+    <em>SKOS predicates: <code>exactMatch</code> = same concept; <code>closeMatch</code> = similar but not identical; <code>broadMatch</code> / <code>narrowMatch</code> for hierarchical relationships.</em></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="sarch-d1" data-parent="s-arch">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Architecture</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🏗️</div>
+    <strong>Technology choices at each layer</strong><br><br>
+    <table style="font-size:0.9em; border-collapse:collapse; width:100%;">
+      <tr style="background:#f0f0f0;">
+        <th style="text-align:left;padding:5px 8px;">Layer</th>
+        <th style="text-align:left;padding:5px 8px;">Open-source options</th>
+      </tr>
+      <tr><td style="padding:5px 8px;">Lift to RDF</td><td style="padding:5px 8px;">RML mapper, SPARQL-Generate, Ontop</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:5px 8px;">Triple store</td><td style="padding:5px 8px;">Apache Jena, Oxigraph, Virtuoso, GraphDB</td></tr>
+      <tr><td style="padding:5px 8px;">Shapes</td><td style="padding:5px 8px;">shex.js, pySHACL, Apache Jena SHACL</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:5px 8px;">SPARQL endpoint</td><td style="padding:5px 8px;">Fuseki, QLever, SPARQLlist (REST wrapping)</td></tr>
+      <tr><td style="padding:5px 8px;">Analysis</td><td style="padding:5px 8px;">SPARQLWrapper (Python), SPARQL.client (R)</td></tr>
+      <tr style="background:#f9f9f9;"><td style="padding:5px 8px;">Reasoning</td><td style="padding:5px 8px;">HermiT, ELK, Pellet</td></tr>
+    </table>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s18-d1" data-parent="s18">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Conclusion</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📚</div>
+    <p><strong>Recommended further reading</strong><br><br>
+    • <a href="https://book.validatingrdf.com/" style="color:#009CB4;"><em>Validating RDF Data</em></a> — Labra Gayo et al. — free online; covers ShEx and SHACL in depth<br>
+    • <a href="https://linkml.io/" style="color:#009CB4;">linkml.io</a> — LinkML schema language, generates ShEx / SHACL / JSON Schema from one source<br>
+    • <a href="https://www.w3.org/TR/sparql11-overview/" style="color:#009CB4;">W3C SPARQL 1.1 Overview</a> — the formal specification<br>
+    • <a href="https://ontop-vkg.org/" style="color:#009CB4;">ontop-vkg.org</a> — Ontop virtual knowledge graphs (OMOP2FHIR example)<br>
+    • <a href="https://www.wikidata.org/wiki/Wikidata:WikiProject_Biomedical" style="color:#009CB4;">Wikidata Biomedical WikiProject</a> — community-maintained biomedical knowledge graph</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s-shexmap-d1" data-parent="s-shexmap">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">ShExMap — What &amp; Why</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🗺️</div>
+    <p><strong>Why existing approaches fall short</strong><br><br>
+    <strong>SPARQL CONSTRUCT</strong> can transform RDF but requires hand-writing every mapping as a graph pattern — no schema reuse, no validation, no round-trip guarantee.<br><br>
+    <strong>XSLT / custom scripts</strong> are format-specific and brittle: a schema change breaks every downstream transform.<br><br>
+    <strong>ShExMap's key insight:</strong> the same ShEx schema that <em>validates</em> your data can simultaneously <em>declare</em> what each value means — independently of any particular vocabulary. The %Map:{variable} annotation is the only addition needed.<br><br>
+    <em>Further reading:</em> <a href="https://shex.io/" style="color:#009CB4;">shex.io</a> · shex.js Map extension documentation</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s-shexmap-pipe-d1" data-parent="s-shexmap-pipe">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">ShExMap — Pipeline</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔄</div>
+    <p><strong>What happens at each step</strong><br><br>
+    <strong>Step 1 — Validate:</strong> shex.js walks the input RDF graph against the input schema. Each <code>%Map:{var}</code> annotation registers the matched value under the named variable. If validation fails, no bindings are produced and the error is reported with the failing node and shape.<br><br>
+    <strong>Step 2 — Bindings:</strong> a flat JSON object. Variable names are schema-neutral — they carry no FHIR or OMOP semantics. This is what crosses the schema boundary.<br><br>
+    <strong>Step 3 — Materialize:</strong> the materializer constructs output triples by matching the output schema's <code>%Map:{var}</code> annotations to the bindings object. <code>regex()</code> annotations can reconstruct composite literals (e.g. "Walker, Alice") from multiple captured variables.<br><br>
+    <em>Live demo available at:</em> <code>shexmap_demo.html</code></p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s-shexmap-ex-d1" data-parent="s-shexmap-ex">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">ShExMap — BP Example</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🩺</div>
+    <p><strong>About the blood pressure example</strong><br><br>
+    The input schema matches FHIR RDF — a standard that clinical systems already produce. The output schema targets a Domain Application Model (DAM) — a lean, research-specific vocabulary designed for a particular study.<br><br>
+    The same pair of schemas also runs in <strong>reverse</strong>: validate a DAM instance and materialize it back to FHIR RDF — without any additional code.<br><br>
+    <strong>What makes this bidirectional?</strong> Because both schemas annotate their triple constraints with the same variable names (<code>bp:sysVal</code>, <code>bp:family</code>, etc.), the bindings object acts as a shared coordinate system between any two annotated schemas — not just FHIR↔DAM.<br><br>
+    <em>Runnable interactive demo:</em> open <code>shexmap_demo.html</code> and select example "bp1".</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s-omop2fhir-d1" data-parent="s-omop2fhir">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">OMOP2FHIR via Ontop</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🏥</div>
+    <p><strong>How Ontop works</strong><br><br>
+    Ontop is an <em>OBDA system</em> (Ontology-Based Data Access). It sits between a relational database and a SPARQL endpoint. An <strong>OBDA mapping file</strong> declares rules of the form:<br><br>
+    <code style="font-size:0.8em; background:#f5f5f5; padding:6px 10px; display:block; line-height:1.7; border-radius:3px;">
+    [MappingId] MedicationStatement<br>
+    target &nbsp;&nbsp;&nbsp;fhir:{drug_exposure_id} a fhir:MedicationStatement ;<br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fhir:subject fhir:{person_id} .<br>
+    source &nbsp;&nbsp;&nbsp;SELECT drug_exposure_id, person_id FROM drug_exposure
+    </code><br>
+    When a SPARQL query arrives, Ontop rewrites it into SQL against the OMOP CDM tables — the RDF graph is <strong>never materialised on disk</strong>. This means OMOP data stays in place, governance remains unchanged, and FHIR consumers see a live, consistent view.<br><br>
+    <em>Project:</em> <a href="https://ontop-vkg.org/" style="color:#009CB4;">ontop-vkg.org</a> · Work by Rowdy de Groot</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="sty-d1" data-parent="s-thankyou">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Thank you</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">💬</div>
+    <p><strong>Q&amp;A prompts</strong><br><br>
+    • What format is your institution's primary data in today, and what would it take to lift it to RDF?<br>
+    • Have you encountered a case where two datasets used the same code string for different concepts?<br>
+    • Which layer of the stack (RDF, SPARQL, shapes, bridging) would be most immediately useful for your work?<br>
+    • Are there existing SPARQL endpoints in your domain that you could query today?<br><br>
+    <strong>Contact:</strong> a.s.waagmeester@amsterdamumc.nl &nbsp;·&nbsp; ORCID 0000-0001-9773-4008<br>
+    <strong>Slides:</strong> <code>gentle_intro_semantic_web.html</code></p>
+  </div></div>
+</section>
+
+<!-- ── Navigation ── -->
+<nav>
+  <button id="btn-prev" onclick="go(-1)" disabled>←</button>
+  <span class="counter" id="ctr">1 / 22</span>
+  <button id="btn-next" onclick="go(1)">→</button>
+</nav>
+
+<script>
+// ── Slide sets ──────────────────────────────────────────────
+const mainSlides   = [...document.querySelectorAll('.slide:not(.detail-slide)')];
+const detailSlides = [...document.querySelectorAll('.slide.detail-slide')];
+
+// Map: parentId → [detail slide elements in order]
+const detailMap = {};
+detailSlides.forEach(ds => {
+  const pid = ds.dataset.parent;
+  if (!detailMap[pid]) detailMap[pid] = [];
+  detailMap[pid].push(ds);
+});
+
+// ── State ────────────────────────────────────────────────────
+let mainCur   = 0;   // index into mainSlides
+let detailCur = -1;  // -1 = on main slide; 0+ = detail index
+
+const darkSlides = new Set(['s1', 's18', 's-thankyou']);
+
+// ── Helpers ──────────────────────────────────────────────────
+function currentMainId()  { return mainSlides[mainCur].id; }
+function inDetail()       { return detailCur >= 0; }
+function currentDetails() { return detailMap[currentMainId()] || []; }
+
+function updateLogo() {
+  const logo = document.getElementById('fixed-logo');
+  if (!logo) return;
+  const activeId = inDetail()
+    ? currentDetails()[detailCur]?.id
+    : currentMainId();
+  logo.style.display = darkSlides.has(activeId) ? 'none' : 'block';
+}
+
+function render() {
+  // Hide everything
+  [...mainSlides, ...detailSlides].forEach(s => s.classList.remove('active'));
+
+  const dets = currentDetails();
+  if (inDetail() && dets[detailCur]) {
+    dets[detailCur].classList.add('active');
+    document.getElementById('ctr').textContent =
+      (mainCur + 1) + '↓' + (detailCur + 1) + ' / ' + mainSlides.length;
+  } else {
+    mainSlides[mainCur].classList.add('active');
+    document.getElementById('ctr').textContent =
+      (mainCur + 1) + ' / ' + mainSlides.length;
+  }
+
+  document.getElementById('btn-prev').disabled = mainCur === 0 && !inDetail();
+  document.getElementById('btn-next').disabled =
+    mainCur === mainSlides.length - 1 && !inDetail();
+  updateLogo();
+}
+
+// ── Navigation ───────────────────────────────────────────────
+function go(dir) {
+  if (inDetail()) {
+    // Navigate within detail sub-deck of current main slide
+    const next = detailCur + dir;
+    const dets = currentDetails();
+    if (next >= 0 && next < dets.length) {
+      detailCur = next;
+    } else if (next < 0) {
+      detailCur = -1;           // back to main slide
+    }
+    // next >= dets.length: already at last detail, do nothing
+  } else {
+    mainCur = Math.max(0, Math.min(mainSlides.length - 1, mainCur + dir));
+  }
+  render();
+}
+
+function goDown() {
+  if (!inDetail() && currentDetails().length > 0) {
+    detailCur = 0;
+    render();
+  }
+}
+
+function goUp() {
+  if (inDetail()) {
+    detailCur = -1;
+    render();
+  }
+}
+
+// ── Inject ▾ button into every main slide ───────────────────
+mainSlides.forEach(slide => {
+  const btn = document.createElement('button');
+  btn.className = 'detail-btn';
+  btn.title = 'View details (↓)';
+  btn.innerHTML = '<span class="darr">▾</span><span>Details</span>';
+  btn.addEventListener('click', e => { e.stopPropagation(); goDown(); });
+  slide.appendChild(btn);
+});
+
+// ── Keyboard ─────────────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown')  { e.preventDefault(); inDetail() ? go(1) : goDown(); }
+  else if (e.key === 'ArrowUp')    { e.preventDefault(); inDetail() ? goUp() : null; }
+  else if (e.key === 'ArrowRight' || e.key === ' ') {
+    e.preventDefault();
+    inDetail() ? go(1) : go(1);
+  }
+  else if (e.key === 'ArrowLeft')  { e.preventDefault(); go(-1); }
+});
+
+// ── Init ─────────────────────────────────────────────────────
+render();
+
+// ── Slide 4: pixelate bird image onto canvas ──────────────────
+(function() {
+  const PIXEL_W = 48;   // render at 48×58 "pixels" — clearly blocky but face still readable
+  const PIXEL_H = 58;
+  const CANVAS_W = 210;
+  const CANVAS_H = 255;
+
+  const canvas = document.getElementById('s4-pixel-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+
+  const img = new Image();
+  img.onload = function() {
+    // Crop: centre on the bird's face (skip ≈15% top sky, take 70% of height)
+    const srcX = img.width  * 0.05;
+    const srcY = img.height * 0.10;
+    const srcW = img.width  * 0.90;
+    const srcH = img.height * 0.72;
+
+    // Step 1 – draw at tiny resolution (no smoothing needed here)
+    const tiny = document.createElement('canvas');
+    tiny.width  = PIXEL_W;
+    tiny.height = PIXEL_H;
+    const tc = tiny.getContext('2d');
+    tc.drawImage(img, srcX, srcY, srcW, srcH, 0, 0, PIXEL_W, PIXEL_H);
+
+    // Step 2 – blow back up with smoothing disabled → hard blocks
+    ctx.imageSmoothingEnabled = false;
+    ctx.drawImage(tiny, 0, 0, CANVAS_W, CANVAS_H);
+  };
+  img.src = 'bird.jpg';
+})();
+</script>
+</body>
+</html>
