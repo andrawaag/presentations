@@ -32,7 +32,7 @@ body {
 .s8-pillars,.star-steps,.rdf2-grid,.sbe-intro-layout,.s-owl-layout,.s-ai-layout,
 .s-ai-tension,.s-ep-layout,.s-pipe-cols,.s12-layout,.s13-grid,
 .s14-balance,.s15-blocks,.s16-compare,.s17-tools,.s18-points,.s-arch-wrap,
-.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps,.reading-list {
+.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps,.reading-list,.pfx-layout,.pfx-cases,.pfx-right {
   min-height: 0;
   overflow: hidden;
 }
@@ -527,6 +527,29 @@ pre.triple-ex {
 .s-ai-kb { font-size: 0.67em; font-weight: 600; padding: 2px 8px; background: #EEF6F5; color: #009CB4; border-radius: 2px; }
 .s-ai-callout { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 11px 14px; font-size: 0.79em; color: #444; line-height: 1.65; margin-top: 12px; }
 .s-ai-callout strong { color: #5C3A00; }
+
+/* ═══ SLIDE s-prefix – URI identity & prefix mismatches ═══ */
+.pfx-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 14px; }
+.pfx-layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; flex: 1; }
+.pfx-cases { display: flex; flex-direction: column; gap: 12px; }
+.pfx-case { border: 1px solid #ddd; overflow: hidden; flex-shrink: 0; }
+.pfx-case-hd { padding: 6px 14px; font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; background: #003741; color: #A8C8D5; }
+.pfx-row { padding: 7px 14px; font-family: 'Courier New', monospace; font-size: 0.77em; line-height: 1.5; border-top: 1px solid #eee; display: flex; align-items: baseline; gap: 10px; background: #fafafa; }
+.pfx-badge { font-size: 0.68em; font-weight: 700; padding: 2px 7px; border-radius: 2px; flex-shrink: 0; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.07em; }
+.pfx-badge-old { background: #fee2e2; color: #991b1b; }
+.pfx-badge-new { background: #dcfce7; color: #166534; }
+.pfx-diff { background: #fef08a; color: #713f12; font-weight: 700; border-radius: 2px; padding: 0 2px; }
+.pfx-eq-note { padding: 6px 14px 8px; font-size: 0.71em; color: #7a1515; background: #fff5f5; border-top: 1px solid #fecaca; font-style: italic; line-height: 1.55; }
+.pfx-right { display: flex; flex-direction: column; gap: 12px; }
+.pfx-consequence { background: #1a1a2e; color: #fff; padding: 14px 16px; flex-shrink: 0; }
+.pfx-consequence-lbl { font-size: 0.6em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: #f87171; margin-bottom: 8px; }
+.pfx-consequence-body { font-size: 0.8em; line-height: 1.65; color: #e0e0e0; }
+.pfx-consequence code { color: #f9a8d4; font-family: 'Courier New', monospace; }
+.pfx-llm { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 11px 14px; font-size: 0.79em; color: #444; line-height: 1.65; flex-shrink: 0; }
+.pfx-llm strong { color: #5C3A00; }
+.pfx-fix { border: 1px solid #009CB4; overflow: hidden; flex-shrink: 0; }
+.pfx-fix-hd { background: #009CB4; padding: 6px 13px; font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #fff; }
+.pfx-fix-body { padding: 9px 13px; font-size: 0.78em; color: #333; line-height: 1.7; background: #EEF6F5; }
 
 /* ═══ Thank-you slide ═══ */
 #s-thankyou { background: #003741; color: #fff; justify-content: center; }
@@ -1733,6 +1756,68 @@ pre.triple-ex {
 </section>
 
 <!-- ═══════════════════════════════════════════════
+     SLIDE s-prefix – URI identity & prefix mismatches
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-prefix">
+  <p class="kicker">Practical Pitfall &nbsp;·&nbsp; URI Identity</p>
+  <h2>http:// ≠ https:// — a silent killer in linked data</h2>
+  <p class="pfx-intro">In RDF, every resource is identified by its full IRI — character for character. Two IRIs that look nearly identical to a human are <strong>completely unrelated</strong> to any triple store. No warning, no redirect, no fuzzy match. Queries just silently return nothing.</p>
+
+  <div class="pfx-layout">
+    <div class="pfx-cases">
+
+      <div class="pfx-case">
+        <div class="pfx-case-hd">Schema.org — the world's most-used vocabulary</div>
+        <div class="pfx-row">
+          <span class="pfx-badge pfx-badge-old">legacy</span>
+          <span><span class="pfx-diff">http</span>://schema.org/name</span>
+        </div>
+        <div class="pfx-row">
+          <span class="pfx-badge pfx-badge-new">canonical</span>
+          <span><span class="pfx-diff">https</span>://schema.org/name</span>
+        </div>
+        <p class="pfx-eq-note">Billions of published triples still use the http:// form. A JOIN across old and new datasets returns nothing — without <code>owl:sameAs</code> bridges or normalisation at load time.</p>
+      </div>
+
+      <div class="pfx-case">
+        <div class="pfx-case-hd">Wikidata — entity IRI vs browser page URL</div>
+        <div class="pfx-row">
+          <span class="pfx-badge pfx-badge-new">entity IRI</span>
+          <span><span class="pfx-diff">http</span>://www.wikidata.org/<span class="pfx-diff">entity</span>/Q42</span>
+        </div>
+        <div class="pfx-row">
+          <span class="pfx-badge pfx-badge-old">page URL</span>
+          <span><span class="pfx-diff">https</span>://www.wikidata.org/<span class="pfx-diff">wiki</span>/Q42</span>
+        </div>
+        <p class="pfx-eq-note">The entity IRI (http://…/entity/Q42) is the RDF subject for all triples. The browser address (https://…/wiki/Q42) is the human-readable page — a different IRI entirely. Two differences at once: scheme <em>and</em> path.</p>
+      </div>
+
+    </div>
+
+    <div class="pfx-right">
+      <div class="pfx-consequence">
+        <p class="pfx-consequence-lbl">⚡ The consequence</p>
+        <p class="pfx-consequence-body">
+          A SPARQL pattern like <code>?s schema:name ?n</code> — where <code>schema:</code> is declared as <code>https://</code> — finds <em>nothing</em> in a dataset loaded with <code>http://</code> prefixes. The query is syntactically valid, runs without error, and returns an empty result set. There is no diagnostic.
+        </p>
+      </div>
+      <div class="pfx-llm">
+        <strong>LLMs make this worse.</strong> A language model may confidently generate a query using the <em>wrong</em> variant — both forms appear in its training data. The query runs, returns zero results, and nothing flags the mismatch as an error rather than a "no data" answer.
+      </div>
+      <div class="pfx-fix">
+        <div class="pfx-fix-hd">How to handle it</div>
+        <div class="pfx-fix-body">
+          • Always copy the IRI <em>exactly</em> from the vocabulary's namespace document<br>
+          • Normalise on load: one <code>sed</code> pass beats a thousand <code>sameAs</code> triples<br>
+          • Validate declared prefixes in ShEx / SHACL shapes before ingesting data<br>
+          • When using LLM-generated queries, verify the prefix declarations first
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
      SLIDE 13 – SPARQL endpoints, REST & tooling
      ═══════════════════════════════════════════════ -->
 <section class="slide" id="s-endpoints">
@@ -2742,7 +2827,28 @@ ggplot(<span class="cv">df</span>, aes(x = disease)) +
     <strong>The complementary roles:</strong><br>
     • LLM — natural language understanding, query generation, explanation<br>
     • Knowledge graph — ground truth, provenance, structured retrieval<br><br>
-    <em>Active research area:</em> retrieval-augmented generation (RAG) over SPARQL endpoints.</p>
+    <em>Active research area:</em> retrieval-augmented generation (RAG) over SPARQL endpoints.<br><br>
+    <strong>⚠️ Disclaimer: still in its infancy</strong><br>
+    Despite impressive demos, LLM-generated SPARQL is not yet reliable in production. Results vary significantly across models, endpoints, and vocabularies — and failures are often silent. A recurring failure mode is <strong>IRI / prefix mismatch</strong>: the model writes <code>http://schema.org/name</code> when the loaded dataset uses <code>https://schema.org/name</code>, or queries <code>https://www.wikidata.org/wiki/Q42</code> (the browser URL) instead of the correct entity IRI <code>http://www.wikidata.org/entity/Q42</code>. The query runs, returns nothing, and nothing raises an alarm — making it look like "no data" rather than "wrong query." Other known failure modes include hallucinated property IDs (e.g. inventing <code>wdt:P9999</code>), incorrect OPTIONAL / FILTER scoping, and mismatched graph contexts in federated queries. Always validate generated queries against a small, known dataset before trusting the results.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="spfx-d1" data-parent="s-prefix">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">URI Identity &amp; Prefix Mismatches</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔗</div>
+    <p><strong>More real-world IRI mismatch examples</strong><br><br>
+    <strong>FOAF (Friend of a Friend):</strong><br>
+    The FOAF vocabulary has always used <code>http://xmlns.com/foaf/0.1/</code> — there is no https version. Tools that "helpfully" upgrade the scheme silently break federation with any dataset that uses the canonical form.<br><br>
+    <strong>DBpedia:</strong><br>
+    <code>http://dbpedia.org/resource/Berlin</code> is the stable entity IRI. Some mirrors serve over https, but the published triples use http. Mixing them in a JOIN produces empty results with no error.<br><br>
+    <strong>OBO ontologies:</strong><br>
+    PURL-based IRIs like <code>http://purl.obolibrary.org/obo/HP_0001250</code> are persistent and intentionally HTTP. Upgrading them to HTTPS silently breaks federation with the OBO Foundry endpoints.<br><br>
+    <strong>The underlying rule:</strong> An IRI is a <em>name</em>, not a URL. Treat it as an opaque string and copy it exactly from the vocabulary's published namespace document. The fact that a browser follows http:// and https:// to the same page is irrelevant — the triple store does not browse, it compares strings.
+    </p>
   </div></div>
 </section>
 
