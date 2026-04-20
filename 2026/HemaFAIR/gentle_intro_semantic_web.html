@@ -32,7 +32,7 @@ body {
 .s8-pillars,.star-steps,.rdf2-grid,.sbe-intro-layout,.s-owl-layout,.s-ai-layout,
 .s-ai-tension,.s-ep-layout,.s-pipe-cols,.s12-layout,.s13-grid,
 .s14-balance,.s15-blocks,.s16-compare,.s17-tools,.s18-points,.s-arch-wrap,
-.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps {
+.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps,.reading-list {
   min-height: 0;
   overflow: hidden;
 }
@@ -904,6 +904,29 @@ pre.triple-ex {
 .omop-attr { color: #F78C6C; }
 .omop-credit { font-size: 0.68em; color: #888; margin-top: 6px; flex-shrink: 0; }
 .omop-credit strong { color: #555; }
+
+/* ════════════════════════════════════════════
+   Further reading slide
+   ════════════════════════════════════════════ */
+.reading-list {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  gap: 16px; flex: 1; margin-top: 0.4em; align-content: start;
+}
+.reading-card {
+  display: block; text-decoration: none; color: inherit;
+  background: #fff; border: 1px solid #e0e0e0; border-radius: 5px;
+  padding: 14px 16px; transition: box-shadow 0.15s, border-color 0.15s;
+}
+.reading-card:hover { box-shadow: 0 3px 12px rgba(0,0,0,0.09); border-color: #009CB4; }
+.reading-topic {
+  font-size: 0.65em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.13em; color: #009CB4; margin-bottom: 4px;
+}
+.reading-url {
+  font-size: 0.78em; font-weight: 700; color: #003741;
+  margin-bottom: 6px; word-break: break-all;
+}
+.reading-desc { font-size: 0.72em; color: #555; line-height: 1.5; }
 
 </style>
 </head>
@@ -2411,6 +2434,47 @@ ggplot(<span class="cv">df</span>, aes(x = disease)) +
 </section>
 
 <!-- ═══════════════════════════════════════════════
+     SLIDE – Further reading
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-reading">
+  <p class="kicker">Further reading</p>
+  <h2>Where to go next</h2>
+  <div class="reading-list">
+
+    <a class="reading-card" href="https://5stardata.info/en/" target="_blank">
+      <div class="reading-topic">5-star linked data</div>
+      <div class="reading-url">5stardata.info/en/</div>
+      <div class="reading-desc">Practical companion to Tim Berners-Lee's five-star open data scheme — examples and costs/benefits at each level.</div>
+    </a>
+
+    <a class="reading-card" href="https://www.wikidata.org/wiki/Wikidata:SPARQL_query_service/queries/examples#Katten" target="_blank">
+      <div class="reading-topic">SPARQL — live examples</div>
+      <div class="reading-url">wikidata.org · SPARQL examples (cats)</div>
+      <div class="reading-desc">Wikidata's community query gallery — hundreds of real SPARQL queries over a 100 M+ statement knowledge graph. Start with the cats.</div>
+    </a>
+
+    <a class="reading-card" href="https://sib-swiss.github.io/sparql-examples/" target="_blank">
+      <div class="reading-topic">SPARQL — biomedical examples</div>
+      <div class="reading-url">sib-swiss.github.io/sparql-examples/</div>
+      <div class="reading-desc">Curated SPARQL query examples from the Swiss Institute of Bioinformatics — UniProt, Bgee, and other life-science endpoints.</div>
+    </a>
+
+    <a class="reading-card" href="https://book.validatingrdf.com" target="_blank">
+      <div class="reading-topic">Shapes — ShEx &amp; SHACL</div>
+      <div class="reading-url">book.validatingrdf.com</div>
+      <div class="reading-desc"><em>Validating RDF Data</em> by Labra Gayo et al. — the definitive open-access book on ShEx and SHACL, with worked examples.</div>
+    </a>
+
+    <a class="reading-card" href="https://bit.ly/swat4hcls-dbcls" target="_blank">
+      <div class="reading-topic">ShExMap &amp; OMOP2FHIR</div>
+      <div class="reading-url">bit.ly/swat4hcls-dbcls</div>
+      <div class="reading-desc">DBCLS SWAT4HCLS slides — ShEx schema transformation and Ontop-based virtual knowledge graphs bridging OMOP CDM and FHIR.</div>
+    </a>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
      SLIDE 22 – Thank you
      ═══════════════════════════════════════════════ -->
 <section class="slide" id="s-thankyou">
@@ -2937,6 +3001,17 @@ print(df[["gene.value","geneLabel.value"]])</pre>
     </code><br>
     When a SPARQL query arrives, Ontop rewrites it into SQL against the OMOP CDM tables — the RDF graph is <strong>never materialised on disk</strong>. This means OMOP data stays in place, governance remains unchanged, and FHIR consumers see a live, consistent view.<br><br>
     <em>Project:</em> <a href="https://ontop-vkg.org/" style="color:#009CB4;">ontop-vkg.org</a> · Work by Rowdy de Groot</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="s-reading-d1" data-parent="s-reading">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Further reading</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📖</div>
+    Additional resources to explore after the webinar. All links are freely accessible online.
   </div></div>
 </section>
 
