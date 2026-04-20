@@ -32,7 +32,8 @@ body {
 .s8-pillars,.star-steps,.rdf2-grid,.sbe-intro-layout,.s-owl-layout,.s-ai-layout,
 .s-ai-tension,.s-ep-layout,.s-pipe-cols,.s12-layout,.s13-grid,
 .s14-balance,.s15-blocks,.s16-compare,.s17-tools,.s18-points,.s-arch-wrap,
-.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps,.reading-list,.pfx-layout,.pfx-cases,.pfx-right {
+.shxm-cols,.shxp-steps,.shxe-cols,.omop-cols,.omop-explain,.omop-steps,.reading-list,.pfx-layout,.pfx-cases,.pfx-right,
+.r2r-cols,.r2r-left,.r2r-right,.r2r-pipeline {
   min-height: 0;
   overflow: hidden;
 }
@@ -528,6 +529,44 @@ pre.triple-ex {
 .s-ai-callout { background: #FFF8E1; border-left: 4px solid #E89E00; padding: 11px 14px; font-size: 0.79em; color: #444; line-height: 1.65; margin-top: 12px; }
 .s-ai-callout strong { color: #5C3A00; }
 
+/* ═══ SLIDE s-r2rml – R2RML & Ontop ═══ */
+.r2r-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 14px; }
+.r2r-cols  { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 22px; flex: 1; }
+.r2r-left  { display: flex; flex-direction: column; gap: 10px; }
+.r2r-concept { border: 1px solid #ddd; overflow: hidden; flex-shrink: 0; }
+.r2r-concept-hd { background: #003741; color: #A8C8D5; padding: 6px 14px; font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.r2r-concept-body { padding: 8px 14px; background: #fafafa; display: flex; flex-direction: column; gap: 5px; }
+.r2r-row { display: flex; align-items: baseline; gap: 9px; font-size: 0.78em; color: #333; line-height: 1.5; }
+.r2r-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; margin-top: 3px; }
+.r2r-dot-blue   { background: #1a6bbf; }
+.r2r-dot-orange { background: #c2640a; }
+.r2r-dot-green  { background: #3d7a2a; }
+.r2r-code-panel { background: #1E2A3A; border-radius: 4px; padding: 13px 16px; font-family: 'Courier New', monospace; font-size: 0.68em; color: #CFD8DC; line-height: 1.65; flex: 1; }
+.r2r-kw  { color: #80CBC4; font-weight: 700; }
+.r2r-key { color: #82AAFF; }
+.r2r-str { color: #C3E88D; }
+.r2r-var { color: #FFCB6B; font-style: normal; }
+.r2r-attr{ color: #F78C6C; }
+.r2r-cm  { color: #546E7A; font-style: italic; }
+.r2r-right { display: flex; flex-direction: column; gap: 10px; }
+.r2r-pipeline-lbl { font-size: 0.68em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: #888; flex-shrink: 0; }
+.r2r-pipeline { display: flex; flex-direction: column; flex: 1; gap: 0; }
+.r2r-pipe-step { padding: 7px 12px; border: 1px solid #ddd; border-top: none; }
+.r2r-pipe-step:first-of-type { border-top: 1px solid #ddd; }
+.r2r-step-sparql { background: #E3F2FD; border-color: #1565C0 !important; }
+.r2r-step-sql    { background: #FFF8E1; border-color: #E65100 !important; }
+.r2r-step-db     { background: #F3E5F5; border-color: #6A1B9A !important; }
+.r2r-step-rdf    { background: #E8F5E9; border-color: #1B5E20 !important; }
+.r2r-pipe-lbl  { font-size: 0.72em; font-weight: 700; color: #333; }
+.r2r-step-sparql .r2r-pipe-lbl { color: #0D47A1; }
+.r2r-step-sql    .r2r-pipe-lbl { color: #BF360C; }
+.r2r-step-db     .r2r-pipe-lbl { color: #4A148C; }
+.r2r-step-rdf    .r2r-pipe-lbl { color: #1B5E20; }
+.r2r-pipe-body { font-size: 0.68em; color: #555; margin-top: 2px; }
+.r2r-pipe-arrow { font-size: 0.72em; color: #009CB4; font-weight: 700; text-align: center; padding: 3px 0; flex-shrink: 0; }
+.r2r-callout { background: #EEF6F5; border-left: 4px solid #009CB4; padding: 10px 13px; font-size: 0.78em; color: #333; line-height: 1.65; flex-shrink: 0; }
+.r2r-callout strong { color: #003741; }
+
 /* ═══ SLIDE s-prefix – URI identity & prefix mismatches ═══ */
 .pfx-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 14px; }
 .pfx-layout { display: grid; grid-template-columns: 1.15fr 0.85fr; gap: 22px; flex: 1; }
@@ -557,12 +596,16 @@ pre.triple-ex {
 .ty-big { font-size: 3.6em; font-weight: 700; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 0; }
 .ty-sub { font-size: 1em; color: #A8C8D5; margin-top: 18px; margin-bottom: 28px; line-height: 1.6; max-width: 560px; }
 .ty-sep { width: 280px; height: 2px; background: #009CB4; margin-bottom: 28px; }
+.ty-lower { display: flex; gap: 40px; align-items: flex-start; }
 .ty-contact { display: flex; flex-direction: column; gap: 9px; }
 .ty-line { display: flex; align-items: center; gap: 11px; font-size: 0.88em; color: #A8C8D5; }
 .ty-bar { display: inline-block; width: 4px; height: 18px; flex-shrink: 0; }
 .ty-orcid-bar { background: #A6CE39; }
 .ty-email-bar { background: #7BBFCC; }
 .ty-url-bar   { background: #009CB4; }
+.ty-qr-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; margin-left: auto; }
+.ty-qr-img { width: 130px; height: 130px; display: block; background: #fff; padding: 6px; border-radius: 4px; }
+.ty-qr-label { font-size: 0.6em; color: rgba(168,200,213,0.7); text-transform: uppercase; letter-spacing: 0.12em; text-align: center; }
 
 /* ═══ SLIDE 12 – SPARQL endpoints & tooling ═══ */
 .s-ep-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 13px; }
@@ -2277,6 +2320,77 @@ ggplot(<span class="cv">df</span>, aes(x = disease)) +
 </section>
 
 <!-- ═══════════════════════════════════════════════
+     SLIDE s-r2rml — R2RML & Ontop
+     ═══════════════════════════════════════════════ -->
+<section class="slide" id="s-r2rml">
+  <p class="kicker">Relational → RDF &nbsp;·&nbsp; R2RML &amp; Ontop</p>
+  <h2>R2RML &amp; Ontop: RDF views over relational databases</h2>
+  <p class="r2r-intro">Most clinical data lives in relational databases — OMOP CDM, EHR tables, registries. <strong>R2RML</strong> (W3C standard) declares how rows and columns map to RDF triples. <strong>Ontop</strong> then rewrites every incoming SPARQL query to SQL on the fly, so the data never has to move or be copied.</p>
+
+  <div class="r2r-cols">
+
+    <!-- Left: concept + code -->
+    <div class="r2r-left">
+      <div class="r2r-concept">
+        <div class="r2r-concept-hd">A TriplesMap has three parts</div>
+        <div class="r2r-concept-body">
+          <div class="r2r-row"><span class="r2r-dot r2r-dot-blue"></span><strong>logicalTable</strong> — which SQL table or view to read</div>
+          <div class="r2r-row"><span class="r2r-dot r2r-dot-orange"></span><strong>subjectMap</strong> — how to build the IRI for each row (the RDF subject)</div>
+          <div class="r2r-row"><span class="r2r-dot r2r-dot-green"></span><strong>predicateObjectMap</strong> — which column maps to which predicate &amp; object</div>
+        </div>
+      </div>
+      <div class="r2r-code-panel">
+<span class="r2r-cm"># Map every row in `person` → a FHIR Patient IRI</span><br>
+&lt;<span class="r2r-key">#PatientMap</span>&gt; <span class="r2r-kw">a</span> <span class="r2r-attr">rr:TriplesMap</span> ;<br>
+&nbsp;&nbsp;<span class="r2r-kw">rr:logicalTable</span> [ <span class="r2r-kw">rr:tableName</span> <span class="r2r-str">"person"</span> ] ;<br>
+&nbsp;&nbsp;<span class="r2r-kw">rr:subjectMap</span> [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="r2r-kw">rr:template</span> <span class="r2r-str">"http://ex.org/patient/<span class="r2r-var">{person_id}</span>"</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="r2r-kw">rr:class</span>    <span class="r2r-attr">fhir:Patient</span><br>
+&nbsp;&nbsp;] ;<br>
+&nbsp;&nbsp;<span class="r2r-kw">rr:predicateObjectMap</span> [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="r2r-kw">rr:predicate</span> <span class="r2r-attr">fhir:birthDate</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="r2r-kw">rr:objectMap</span> [ <span class="r2r-kw">rr:column</span> <span class="r2r-str">"birth_datetime"</span> ]<br>
+&nbsp;&nbsp;] ;<br>
+&nbsp;&nbsp;<span class="r2r-kw">rr:predicateObjectMap</span> [<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="r2r-kw">rr:predicate</span> <span class="r2r-attr">fhir:gender</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="r2r-kw">rr:objectMap</span> [ <span class="r2r-kw">rr:column</span> <span class="r2r-str">"gender_concept_id"</span> ]<br>
+&nbsp;&nbsp;] .
+      </div>
+    </div>
+
+    <!-- Right: Ontop pipeline + callout -->
+    <div class="r2r-right">
+      <p class="r2r-pipeline-lbl">Ontop OBDA — virtual RDF, no ETL</p>
+      <div class="r2r-pipeline">
+        <div class="r2r-pipe-step r2r-step-sparql">
+          <div class="r2r-pipe-lbl">① SPARQL query</div>
+          <div class="r2r-pipe-body">authored against the RDF / OWL ontology</div>
+        </div>
+        <div class="r2r-pipe-arrow">↓ Ontop reformulates</div>
+        <div class="r2r-pipe-step r2r-step-sql">
+          <div class="r2r-pipe-lbl">② SQL query</div>
+          <div class="r2r-pipe-body">generated at query time — auto-optimised by Ontop</div>
+        </div>
+        <div class="r2r-pipe-arrow">↓ executes against</div>
+        <div class="r2r-pipe-step r2r-step-db">
+          <div class="r2r-pipe-lbl">③ Relational database</div>
+          <div class="r2r-pipe-body">OMOP CDM · PostgreSQL · Oracle · any JDBC source</div>
+        </div>
+        <div class="r2r-pipe-arrow">↓ results returned as</div>
+        <div class="r2r-pipe-step r2r-step-rdf">
+          <div class="r2r-pipe-lbl">④ SPARQL result set</div>
+          <div class="r2r-pipe-body">JSON / CSV / TSV — zero data movement, zero duplication</div>
+        </div>
+      </div>
+      <div class="r2r-callout">
+        <strong>No copy, no conversion.</strong> The relational data is never physically turned into RDF — it is <em>seen as</em> RDF through the mapping layer. One R2RML file; your existing database; unlimited SPARQL queries over it.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
      SLIDE s-omop2fhir — OMOP2FHIR via Ontop
      ═══════════════════════════════════════════════ -->
 <section class="slide" id="s-omop2fhir">
@@ -2573,19 +2687,33 @@ ggplot(<span class="cv">df</span>, aes(x = disease)) +
   <h1 class="ty-big">Thank you.</h1>
   <p class="ty-sub">Questions, comments, and collaborations are very welcome.</p>
   <div class="ty-sep"></div>
-  <div class="ty-contact">
-    <p class="ty-line">
-      <span class="ty-bar ty-email-bar"></span>
-      a.s.waagmeester@amsterdamumc.nl
-    </p>
-    <p class="ty-line">
-      <span class="ty-bar ty-orcid-bar"></span>
-      ORCID &nbsp;0000-0001-9773-4008
-    </p>
-    <p class="ty-line">
-      <span class="ty-bar ty-url-bar"></span>
-      Amsterdam UMC
-    </p>
+  <div class="ty-lower">
+    <div class="ty-contact">
+      <p class="ty-line">
+        <span class="ty-bar ty-email-bar"></span>
+        a.s.waagmeester@amsterdamumc.nl
+      </p>
+      <p class="ty-line">
+        <span class="ty-bar ty-orcid-bar"></span>
+        ORCID &nbsp;0000-0001-9773-4008
+      </p>
+      <p class="ty-line">
+        <span class="ty-bar ty-url-bar"></span>
+        Amsterdam UMC
+      </p>
+      <p class="ty-line" style="margin-top:6px">
+        <span class="ty-bar" style="background:#E95D15"></span>
+        <a href="https://andrawaag.github.io/presentations/2026/HemaFAIR/gentle_intro_semantic_web.html"
+           style="color:#A8C8D5;font-size:0.82em;word-break:break-all;">
+          andrawaag.github.io/presentations/2026/HemaFAIR/gentle_intro_semantic_web.html
+        </a>
+      </p>
+    </div>
+    <div class="ty-qr-wrap">
+      <img class="ty-qr-img" src="qr_presentation.png"
+           alt="QR code — andrawaag.github.io/presentations/2026/HemaFAIR/gentle_intro_semantic_web.html">
+      <span class="ty-qr-label">scan to open slides</span>
+    </div>
   </div>
   <div class="dot-grid" aria-hidden="true">
     <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
@@ -3092,6 +3220,25 @@ print(df[["gene.value","geneLabel.value"]])</pre>
     The same pair of schemas also runs in <strong>reverse</strong>: validate a DAM instance and materialize it back to FHIR RDF — without any additional code.<br><br>
     <strong>What makes this bidirectional?</strong> Because both schemas annotate their triple constraints with the same variable names (<code>bp:sysVal</code>, <code>bp:family</code>, etc.), the bindings object acts as a shared coordinate system between any two annotated schemas — not just FHIR↔DAM.<br><br>
     <em>Runnable interactive demo:</em> open <code>shexmap_demo.html</code> and select example "bp1".</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="sr2r-d1" data-parent="s-r2rml">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">R2RML &amp; Ontop</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🗄️</div>
+    <p><strong>R2RML vs RML vs YARRRML</strong><br><br>
+    <strong>R2RML</strong> (W3C 2012) is the baseline standard — covers relational databases only. Mapping files are written in Turtle.<br><br>
+    <strong>RML</strong> (RDF Mapping Language) extends R2RML to non-relational sources: CSV, JSON, XML, REST APIs. Mapping syntax is very similar but adds <code>rml:source</code> and <code>rml:referenceFormulation</code>.<br><br>
+    <strong>YARRRML</strong> is a human-friendly YAML serialisation of RML — much easier to author than raw Turtle. The online tool <em>Matey</em> converts YARRRML ↔ RML interactively in the browser.<br><br>
+    <strong>Ontop vs other engines:</strong><br>
+    • <a href="https://ontop-vkg.org/" style="color:#009CB4;">Ontop</a> — full OWL 2 QL reasoning, live SPARQL→SQL rewrite, used in production with OMOP CDM and EHR systems<br>
+    • <a href="https://github.com/RMLio/rmlmapper-java" style="color:#009CB4;">RMLMapper</a> — materialises RDF from any source; simpler, no live query rewrite<br>
+    • <a href="https://morph-kgc.readthedocs.io/" style="color:#009CB4;">Morph-KGC</a> — Python, fast materialisation, strong CSV/JSON support<br><br>
+    <em>Rule of thumb:</em> use Ontop when your database is in production and must stay there. Use RMLMapper / Morph-KGC when you need a one-off materialisation or work with non-relational files.</p>
   </div></div>
 </section>
 
