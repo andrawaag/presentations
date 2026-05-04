@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HemaFAIR Tutorial — Andra Waagmeester</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  background: #fff;
+  color: #111;
+  overflow: hidden;
+}
+
+/* ── Slide shell ── */
+.slide {
+  display: none;
+  position: absolute;
+  inset: 0;
+  padding: 52px 68px 80px;
+  flex-direction: column;
+  overflow: hidden;
+}
+.slide.active { display: flex; }
+.slide.active > * { min-height: 0; }
+
+/* All primary layout grids/flex-cols shrink to fit the slide height */
+.tu-program-grid,.tu-two-col,.tu-three-col,.tu-steps,
+.tu-exercise-layout,.tu-sparql-layout,.tu-pipeline-wrap {
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Typography ── */
+h2 { font-size: 1.55em; font-weight: 700; margin-bottom: 0.7em; }
+.kicker {
+  font-size: 0.72em; font-weight: 600; text-transform: uppercase;
+  letter-spacing: 0.16em; color: #999; margin-bottom: 10px;
+}
+.footnote {
+  font-size: 0.75em; color: #888; font-style: italic;
+  border-top: 1px solid #e8e8e8; padding-top: 10px; margin-top: auto;
+}
+
+/* ── Navigation ── */
+nav {
+  position: fixed; bottom: 28px; right: 48px;
+  display: flex; align-items: center; gap: 12px; font-size: 0.82em;
+}
+nav button {
+  background: #111; color: #fff; border: none;
+  padding: 7px 18px; cursor: pointer; font-size: inherit; font-family: inherit;
+}
+nav button:hover { background: #444; }
+nav button:disabled { background: #ccc; cursor: default; }
+.counter { color: #aaa; min-width: 48px; text-align: center; }
+
+/* ── Detail-slide button (injected by JS) ── */
+.detail-btn {
+  position: absolute; bottom: 26px; left: 68px;
+  display: flex; align-items: center; gap: 5px;
+  background: none; border: 1px solid #ccc; color: #999;
+  padding: 4px 12px; cursor: pointer; font-size: 0.72em;
+  font-family: inherit; letter-spacing: 0.06em;
+  transition: border-color 0.15s, color 0.15s;
+}
+.detail-btn:hover { border-color: #009CB4; color: #009CB4; }
+.darr { font-size: 1.2em; line-height: 1; }
+
+/* ── Detail slide chrome ── */
+.detail-hdr {
+  display: flex; align-items: center; gap: 14px;
+  border-bottom: 2px solid #009CB4; padding-bottom: 10px; margin-bottom: 18px;
+  flex-shrink: 0;
+}
+.detail-back {
+  background: #009CB4; color: #fff; border: none;
+  padding: 5px 14px; cursor: pointer; font-size: 0.78em; font-family: inherit;
+}
+.detail-back:hover { background: #007a90; }
+.detail-parent-lbl   { font-size: 0.68em; color: #999; text-transform: uppercase; letter-spacing: 0.1em; }
+.detail-parent-title { font-size: 0.92em; font-weight: 700; color: #003741; margin-left: 6px; }
+.detail-idx { margin-left: auto; font-size: 0.72em; color: #bbb; }
+.detail-body {
+  flex: 1; min-height: 0; overflow-y: auto;
+  font-size: 1em; color: #222; line-height: 1.7;
+  padding: 28px 36px; align-items: flex-start;
+}
+.detail-ph { display: flex; flex-direction: column; gap: 10px; }
+.dph-icon { font-size: 2.2em; margin-bottom: 4px; }
+
+/* ═══ SLIDE t1 – Title ═══ */
+.slide-logo {
+  position: fixed; top: 18px; right: 24px;
+  height: 34px; width: auto; z-index: 10;
+  pointer-events: none;
+}
+
+#t1 {
+  background: #003741;
+  color: #fff;
+  padding-left: 80px;
+  padding-top: 60px;
+  justify-content: flex-start;
+}
+#t1::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+  background: #E95D15;
+}
+#t1 .kicker { color: #7BBFCC; }
+#t1 h1 {
+  font-size: 2.8em; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em; color: #fff; max-width: 860px;
+  margin-bottom: 0;
+}
+.title-sep { width: 280px; height: 2px; background: #E95D15; margin: 26px 0 22px; }
+.speaker-name { font-size: 1.35em; font-weight: 700; color: #fff; margin-bottom: 5px; }
+.speaker-inst { font-size: 0.95em; color: #A8C8D5; margin-bottom: 18px; }
+.speaker-link {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 0.84em; color: #A8C8D5; margin-bottom: 7px;
+}
+.link-bar { display: inline-block; width: 4px; height: 18px; flex-shrink: 0; }
+.dot-grid {
+  position: absolute; right: 52px; bottom: 52px;
+  display: grid; grid-template-columns: repeat(8, 1fr); gap: 11px;
+  pointer-events: none;
+}
+.dot-grid span { width: 6px; height: 6px; background: rgba(255,255,255,0.15); display: block; }
+
+/* ═══ Day divider slides ═══ */
+.day-divider {
+  background: #003741; color: #fff;
+  justify-content: center; align-items: flex-start;
+  padding-left: 80px;
+}
+.day-divider::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 12px;
+  background: #E95D15;
+}
+.day-num {
+  font-size: 0.72em; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.2em; color: #7BBFCC; margin-bottom: 14px;
+}
+.day-title {
+  font-size: 3em; font-weight: 700; line-height: 1.1;
+  letter-spacing: -0.02em; color: #fff; max-width: 700px; margin-bottom: 20px;
+}
+.day-sessions {
+  display: flex; flex-direction: column; gap: 8px; margin-top: 10px;
+}
+.day-session-item {
+  display: flex; align-items: baseline; gap: 14px;
+  font-size: 0.88em; color: #A8C8D5; line-height: 1.4;
+}
+.day-session-time {
+  font-family: 'Courier New', monospace; font-size: 0.85em;
+  color: #7BBFCC; flex-shrink: 0; width: 120px;
+}
+.day-sep { width: 200px; height: 2px; background: #009CB4; margin: 20px 0; }
+
+/* ═══ Program overview slide ═══ */
+.tu-program-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  flex: 1;
+}
+.tu-day-col { display: flex; flex-direction: column; gap: 4px; }
+.tu-day-hd {
+  background: #003741; color: #fff;
+  padding: 7px 10px; font-size: 0.72em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+}
+.tu-slot {
+  padding: 5px 9px; font-size: 0.68em; color: #444; line-height: 1.4;
+  border-left: 3px solid transparent; background: #f7f7f7;
+}
+.tu-slot-time { font-family: 'Courier New', monospace; font-size: 0.85em; color: #999; }
+.tu-slot-andra {
+  border-left-color: #E95D15; background: #FFF4EF;
+  color: #222;
+}
+.tu-slot-andra .tu-slot-time { color: #E95D15; }
+.tu-slot-andra strong { color: #003741; }
+.tu-slot-break { background: #f0f0f0; color: #aaa; border-left-color: #ddd; }
+.tu-legend { display: flex; align-items: center; gap: 8px; font-size: 0.72em; color: #666; margin-top: 10px; flex-shrink: 0; }
+.tu-legend-dot { width: 12px; height: 12px; background: #E95D15; flex-shrink: 0; }
+
+/* ═══ Content slide shared components ═══ */
+.tu-intro { font-size: 0.84em; color: #444; line-height: 1.7; margin-bottom: 14px; }
+.tu-two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; flex: 1; }
+.tu-three-col { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; flex: 1; }
+
+.tu-box { border: 1px solid #ddd; overflow: hidden; }
+.tu-box-hd {
+  padding: 6px 14px; font-size: 0.68em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em;
+  background: #003741; color: #A8C8D5;
+}
+.tu-box-body {
+  padding: 10px 14px; font-size: 0.78em; color: #333;
+  line-height: 1.65; background: #fafafa;
+}
+
+.tu-callout {
+  background: #EEF6F5; border-left: 4px solid #009CB4;
+  padding: 10px 14px; font-size: 0.79em; color: #333; line-height: 1.65;
+  flex-shrink: 0;
+}
+.tu-callout strong { color: #003741; }
+
+.tu-warn {
+  background: #FFF8E1; border-left: 4px solid #E89E00;
+  padding: 10px 14px; font-size: 0.78em; color: #444; line-height: 1.65;
+  flex-shrink: 0;
+}
+.tu-warn strong { color: #5C3A00; }
+
+.tu-steps { display: flex; flex-direction: column; gap: 8px; }
+.tu-step {
+  display: flex; align-items: baseline; gap: 12px;
+  padding: 8px 12px; border-left: 3px solid #009CB4;
+  background: #f9f9f9; font-size: 0.78em; color: #333; line-height: 1.5;
+}
+.tu-step-num {
+  font-weight: 700; color: #009CB4; flex-shrink: 0;
+  font-size: 0.9em; width: 20px;
+}
+
+.tu-code {
+  background: #1E2A3A; border-radius: 4px;
+  padding: 13px 16px; font-family: 'Courier New', monospace;
+  font-size: 0.68em; color: #CFD8DC; line-height: 1.65;
+}
+.tu-kw  { color: #80CBC4; font-weight: 700; }
+.tu-var { color: #82AAFF; }
+.tu-str { color: #C3E88D; }
+.tu-cm  { color: #546E7A; font-style: italic; }
+.tu-uri { color: #FFCB6B; }
+.tu-attr{ color: #F78C6C; }
+
+/* ═══ Semantic Landscapes slide ═══ */
+.tu-landscape-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 18px; flex: 1; min-height: 0; overflow: hidden;
+}
+.tu-silo {
+  border: 1px solid #ddd; overflow: hidden; display: flex; flex-direction: column;
+}
+.tu-silo-hd {
+  padding: 6px 12px; font-size: 0.68em; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 0.12em; color: #fff;
+}
+.tu-silo-body {
+  padding: 9px 12px; font-size: 0.75em; color: #444; line-height: 1.6;
+  background: #fafafa; flex: 1;
+}
+.tu-bridge {
+  grid-column: 1 / -1; background: #003741; color: #fff;
+  padding: 10px 16px; display: flex; align-items: center; gap: 18px;
+  flex-shrink: 0;
+}
+.tu-bridge-lbl { font-size: 0.62em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.13em; color: #7BBFCC; flex-shrink: 0; }
+.tu-bridge-flow { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 0.78em; }
+.tu-pill { background: rgba(255,255,255,0.12); padding: 3px 10px; color: #fff; border-radius: 2px; }
+.tu-arr { color: #009CB4; font-weight: 700; }
+
+/* ═══ RDF intro slide ═══ */
+.tu-triple-demo {
+  display: flex; align-items: stretch; gap: 0; margin: 14px 0; flex-shrink: 0;
+}
+.tu-triple-part {
+  flex: 1; padding: 12px 10px; text-align: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px;
+}
+.tu-triple-lbl { font-size: 0.62em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; }
+.tu-triple-val { font-size: 0.82em; font-family: 'Courier New', monospace; font-weight: 700; }
+.tu-triple-s { background: #DBEAFE; }
+.tu-triple-s .tu-triple-lbl { color: #1a6bbf; }
+.tu-triple-s .tu-triple-val { color: #1a6bbf; }
+.tu-triple-p { background: #FEF3C7; }
+.tu-triple-p .tu-triple-lbl { color: #c2640a; }
+.tu-triple-p .tu-triple-val { color: #c2640a; }
+.tu-triple-o { background: #D1FAE5; }
+.tu-triple-o .tu-triple-lbl { color: #3d7a2a; }
+.tu-triple-o .tu-triple-val { color: #3d7a2a; }
+.tu-triple-sep { width: 2px; background: #fff; }
+
+/* ═══ SPARQL / Combining data slide ═══ */
+.tu-sparql-layout { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 22px; flex: 1; }
+.tu-sparql-left  { display: flex; flex-direction: column; gap: 10px; }
+.tu-sparql-right { display: flex; flex-direction: column; gap: 10px; }
+
+/* ═══ Pipeline / wrap-up slide ═══ */
+.tu-pipeline-wrap { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.tu-pipe-row {
+  display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+}
+.tu-pipe-node {
+  flex: 1; padding: 9px 14px; border: 1px solid #ddd;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.tu-pipe-node-lbl { font-size: 0.7em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; }
+.tu-pipe-node-sub { font-size: 0.68em; color: #666; }
+.tu-node-omop    { border-color: #0277BD; background: #E1F5FE; }
+.tu-node-omop    .tu-pipe-node-lbl { color: #01579B; }
+.tu-node-r2rml   { border-color: #7B1FA2; background: #F3E5F5; }
+.tu-node-r2rml   .tu-pipe-node-lbl { color: #6A1B9A; }
+.tu-node-ontop   { border-color: #00838F; background: #E0F7FA; }
+.tu-node-ontop   .tu-pipe-node-lbl { color: #006064; }
+.tu-node-sparql  { border-color: #E65100; background: #FFF8E1; }
+.tu-node-sparql  .tu-pipe-node-lbl { color: #BF360C; }
+.tu-node-fedbio  { border-color: #2E7D32; background: #E8F5E9; }
+.tu-node-fedbio  .tu-pipe-node-lbl { color: #1B5E20; }
+.tu-pipe-arrow { font-size: 1.1em; color: #009CB4; font-weight: 700; flex-shrink: 0; }
+
+/* ═══ Thank-you slide ═══ */
+#t-thankyou {
+  background: #003741; color: #fff; justify-content: center;
+}
+#t-thankyou::before {
+  content:''; position:absolute; left:0; top:0; bottom:0; width:12px; background:#E95D15;
+}
+.ty-big { font-size: 3.6em; font-weight: 700; letter-spacing: -0.02em; color: #fff; line-height: 1.05; margin-bottom: 0; }
+.ty-sub { font-size: 1em; color: #A8C8D5; margin-top: 18px; margin-bottom: 28px; line-height: 1.6; max-width: 560px; }
+.ty-sep { width: 280px; height: 2px; background: #009CB4; margin-bottom: 28px; }
+.ty-lower { display: flex; gap: 40px; align-items: flex-start; }
+.ty-contact { display: flex; flex-direction: column; gap: 9px; }
+.ty-line { display: flex; align-items: center; gap: 11px; font-size: 0.88em; color: #A8C8D5; }
+.ty-bar { display: inline-block; width: 4px; height: 18px; flex-shrink: 0; }
+.ty-orcid-bar { background: #A6CE39; }
+.ty-email-bar { background: #7BBFCC; }
+.ty-url-bar   { background: #009CB4; }
+</style>
+</head>
+<body>
+
+<img id="fixed-logo" class="slide-logo" src="amumc_icon.png" alt="Amsterdam UMC">
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t1 – Title
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t1">
+  <p class="kicker">HemaFAIR Tutorial &nbsp;·&nbsp; May 2026</p>
+  <h1>From clinical data to<br>FAIR knowledge graphs</h1>
+  <div class="title-sep"></div>
+  <p class="speaker-name">Andra Waagmeester</p>
+  <p class="speaker-inst">Amsterdam UMC</p>
+  <p class="speaker-link link-email">
+    <span class="link-bar"></span>
+    a.s.waagmeester@amsterdamumc.nl
+  </p>
+  <p class="speaker-link link-orcid">
+    <span class="link-bar" style="background:#A6CE39"></span>
+    ORCID 0000-0001-9773-4008
+  </p>
+  <p class="speaker-link" style="margin-top:12px">
+    <span class="link-bar" style="background:#E95D15"></span>
+    <a href="https://andrawaag.github.io/presentations/2026/HemaFAIR/hemafair_tutorial.html"
+       style="color:#A8C8D5;">andrawaag.github.io/presentations/2026/HemaFAIR/hemafair_tutorial.html</a>
+  </p>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-program – Program overview
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-program">
+  <p class="kicker">Overview &nbsp;·&nbsp; 4-Day Programme</p>
+  <h2>Where I present this week</h2>
+
+  <div class="tu-program-grid">
+
+    <!-- Day 1 -->
+    <div class="tu-day-col">
+      <div class="tu-day-hd">Day 1</div>
+      <div class="tu-slot"><span class="tu-slot-time">10:00</span> Opening &amp; intro</div>
+      <div class="tu-slot tu-slot-andra">
+        <span class="tu-slot-time">10:30</span>
+        <strong>Semantic Landscapes</strong><br>Andra
+      </div>
+      <div class="tu-slot"><span class="tu-slot-time">11:00</span> Introduction to OMOP</div>
+      <div class="tu-slot"><span class="tu-slot-time">11:30</span> Map CSV → OMOP</div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">13:00</span> ☕ Lunch</div>
+      <div class="tu-slot"><span class="tu-slot-time">14:00</span> Find Ontology Terms</div>
+      <div class="tu-slot"><span class="tu-slot-time">14:30</span> Define &amp; run ETL</div>
+      <div class="tu-slot"><span class="tu-slot-time">15:00</span> Ethics (Annalisa)</div>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="tu-day-col">
+      <div class="tu-day-hd">Day 2</div>
+      <div class="tu-slot"><span class="tu-slot-time">10:00</span> Recap Day 1</div>
+      <div class="tu-slot tu-slot-andra">
+        <span class="tu-slot-time">10:15</span>
+        <strong>Introduction to RDF</strong><br>Andra
+      </div>
+      <div class="tu-slot tu-slot-andra">
+        <span class="tu-slot-time">10:45</span>
+        <strong>RDF hands-on</strong><br>Andra
+      </div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">11:15</span> ☕ Break</div>
+      <div class="tu-slot tu-slot-andra">
+        <span class="tu-slot-time">11:30</span>
+        <strong>Combine data with SPARQL</strong><br>Andra
+      </div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">13:00</span> ☕ Lunch</div>
+      <div class="tu-slot"><span class="tu-slot-time">14:00</span> Intro to Ontop/OBDA — Daphne</div>
+      <div class="tu-slot"><span class="tu-slot-time">15:00</span> Ontop tutorial — Daphne</div>
+      <div class="tu-slot"><span class="tu-slot-time">16:00</span> DataSHIELD intro</div>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="tu-day-col">
+      <div class="tu-day-hd">Day 3</div>
+      <div class="tu-slot"><span class="tu-slot-time">10:00</span> Recap Day 2</div>
+      <div class="tu-slot"><span class="tu-slot-time">10:15</span> Mapping hands-on — Daphne</div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">11:30</span> ☕ Break</div>
+      <div class="tu-slot"><span class="tu-slot-time">11:30</span> Mapping hands-on (cont.) — Daphne</div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">13:00</span> ☕ Lunch</div>
+      <div class="tu-slot"><span class="tu-slot-time">14:30</span> Hands-on: presentations — Daphne</div>
+      <div class="tu-slot tu-slot-andra">
+        <span class="tu-slot-time">15:00</span>
+        <strong>SPARQL for FedBioMed</strong><br>Andra
+      </div>
+      <div class="tu-slot tu-slot-andra">
+        <span class="tu-slot-time">16:30</span>
+        <strong>Wrap-up &amp; demo</strong><br>Andra
+      </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div class="tu-day-col">
+      <div class="tu-day-hd">Day 4</div>
+      <div class="tu-slot"><span class="tu-slot-time">10:00</span> FL intro — Francesco</div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">11:15</span> ☕ Break</div>
+      <div class="tu-slot"><span class="tu-slot-time">11:30</span> Flower framework — Dimitris</div>
+      <div class="tu-slot"><span class="tu-slot-time">12:30</span> Hackathon prep — Francesco</div>
+      <div class="tu-slot tu-slot-break"><span class="tu-slot-time">13:00</span> ☕ Lunch</div>
+      <div class="tu-slot"><span class="tu-slot-time">14:00</span> Hackathon — Francesco</div>
+      <div class="tu-slot"><span class="tu-slot-time">16:30</span> Hackathon feedback</div>
+    </div>
+
+  </div>
+
+  <div class="tu-legend">
+    <div class="tu-legend-dot"></div>
+    My sessions highlighted in orange
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DAY 1 DIVIDER
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide day-divider" id="t-day1">
+  <p class="day-num">Day 1 &nbsp;·&nbsp; 10:30 – 11:00</p>
+  <h2 class="day-title">Semantic Landscapes</h2>
+  <div class="day-sep"></div>
+  <div class="day-sessions">
+    <div class="day-session-item">
+      <span class="day-session-time">10:30 – 11:00</span>
+      <span>30-minute overview — orienting participants to the FAIR/Semantic Web ecosystem before the OMOP deep-dive begins</span>
+    </div>
+  </div>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-semantic – Semantic Landscapes
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-semantic">
+  <p class="kicker">Day 1 &nbsp;·&nbsp; 10:30 – 11:00</p>
+  <h2>The clinical data landscape — and why it is fragmented</h2>
+  <p class="tu-intro">Health data sits in silos: each uses its own schema, its own codes, its own conventions. The Semantic Web provides the common language that lets these silos speak to each other without merging or copying data.</p>
+
+  <div class="tu-landscape-grid">
+
+    <div class="tu-silo">
+      <div class="tu-silo-hd" style="background:#0277BD">OMOP CDM</div>
+      <div class="tu-silo-body">
+        Observational health data model. Standardised tables for <em>person</em>, <em>condition_occurrence</em>, <em>drug_exposure</em>. OHDSI ecosystem: Athena, Atlas, Achilles.
+      </div>
+    </div>
+
+    <div class="tu-silo">
+      <div class="tu-silo-hd" style="background:#C62828">FHIR / HL7</div>
+      <div class="tu-silo-body">
+        HL7 FHIR — resource-based REST API for clinical interoperability. Patient, Observation, Condition, MedicationStatement. Used by EHR vendors and national health exchanges.
+      </div>
+    </div>
+
+    <div class="tu-silo">
+      <div class="tu-silo-hd" style="background:#2E7D32">Biomedical ontologies</div>
+      <div class="tu-silo-body">
+        SNOMED CT, LOINC, RxNorm, HPO, GO, MONDO. Provide shared definitions of concepts — but each speaks a different serialisation format and identifier scheme.
+      </div>
+    </div>
+
+    <div class="tu-silo">
+      <div class="tu-silo-hd" style="background:#6A1B9A">Knowledge graphs</div>
+      <div class="tu-silo-body">
+        Wikidata, UniProt, ChEMBL, DisGeNET — public linked datasets exposing genes, drugs, diseases as SPARQL-queryable RDF. The connective tissue of the open biomedical web.
+      </div>
+    </div>
+
+    <div class="tu-bridge">
+      <span class="tu-bridge-lbl">The common layer</span>
+      <div class="tu-bridge-flow">
+        <span class="tu-pill">RDF triples</span>
+        <span class="tu-arr">+</span>
+        <span class="tu-pill">shared URIs</span>
+        <span class="tu-arr">+</span>
+        <span class="tu-pill">SPARQL queries</span>
+        <span class="tu-arr">→</span>
+        <span class="tu-pill">federate across all four silos without moving data</span>
+      </div>
+    </div>
+
+  </div>
+  <p class="footnote">This week we will build a working pipeline: CSV → OMOP CDM → R2RML mappings → Ontop virtual KG → SPARQL → FedBioMed federated analysis.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DAY 2 DIVIDER
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide day-divider" id="t-day2">
+  <p class="day-num">Day 2 &nbsp;·&nbsp; Three sessions</p>
+  <h2 class="day-title">RDF, SPARQL<br>&amp; Combining data</h2>
+  <div class="day-sep"></div>
+  <div class="day-sessions">
+    <div class="day-session-item">
+      <span class="day-session-time">10:15 – 10:45</span>
+      <span>Introduction to RDF — the triple model</span>
+    </div>
+    <div class="day-session-item">
+      <span class="day-session-time">10:45 – 11:15</span>
+      <span>RDF hands-on — writing triples from the mock dataset</span>
+    </div>
+    <div class="day-session-item">
+      <span class="day-session-time">11:30 – 12:30</span>
+      <span>SPARQL — writing queries to combine OMOP data with external knowledge graphs</span>
+    </div>
+  </div>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-rdf – Introduction to RDF
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-rdf">
+  <p class="kicker">Day 2 &nbsp;·&nbsp; 10:15 – 10:45</p>
+  <h2>Introduction to RDF — three terms that connect everything</h2>
+  <p class="tu-intro">Every fact in the Semantic Web is expressed as a <strong>triple</strong>: Subject → Predicate → Object. An IRI (web address) names every node, so facts from any source can be joined without schema negotiations.</p>
+
+  <div class="tu-triple-demo">
+    <div class="tu-triple-part tu-triple-s">
+      <div class="tu-triple-lbl">Subject</div>
+      <div class="tu-triple-val">wd:Q1234</div>
+      <div style="font-size:0.65em;color:#1a6bbf;margin-top:4px">the patient / thing</div>
+    </div>
+    <div class="tu-triple-sep"></div>
+    <div class="tu-triple-part tu-triple-p">
+      <div class="tu-triple-lbl">Predicate</div>
+      <div class="tu-triple-val">fhir:birthDate</div>
+      <div style="font-size:0.65em;color:#c2640a;margin-top:4px">the relationship</div>
+    </div>
+    <div class="tu-triple-sep"></div>
+    <div class="tu-triple-part tu-triple-o">
+      <div class="tu-triple-lbl">Object</div>
+      <div class="tu-triple-val">"1985-03-12"</div>
+      <div style="font-size:0.65em;color:#3d7a2a;margin-top:4px">the value or linked node</div>
+    </div>
+  </div>
+
+  <div class="tu-two-col" style="margin-top:12px">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tu-box">
+        <div class="tu-box-hd">IRIs as global names</div>
+        <div class="tu-box-body">
+          <code>http://www.wikidata.org/entity/Q42</code> unambiguously names Douglas Adams — in any dataset, in any language, without a lookup table. Prefixes (<code>wd:</code>, <code>fhir:</code>, <code>schema:</code>) are just shorthand.
+        </div>
+      </div>
+      <div class="tu-box">
+        <div class="tu-box-hd">Turtle syntax — the most readable RDF format</div>
+        <div class="tu-box-body">
+          Triples end in <code>.</code> &nbsp;·&nbsp; semicolon <code>;</code> reuses the subject &nbsp;·&nbsp; comma <code>,</code> reuses subject and predicate. That is almost all you need to read Turtle.
+        </div>
+      </div>
+    </div>
+
+    <div class="tu-code">
+<span class="tu-cm"># A patient in Turtle</span><br>
+<span class="tu-kw">@prefix</span> ex:   <span class="tu-uri">&lt;http://example.org/&gt;</span> .<br>
+<span class="tu-kw">@prefix</span> fhir: <span class="tu-uri">&lt;http://hl7.org/fhir/&gt;</span> .<br>
+<span class="tu-kw">@prefix</span> xsd:  <span class="tu-uri">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span> .<br>
+<br>
+ex:patient_001<br>
+&nbsp;&nbsp;<span class="tu-kw">a</span>               <span class="tu-attr">fhir:Patient</span> ;<br>
+&nbsp;&nbsp;<span class="tu-attr">fhir:birthDate</span>  <span class="tu-str">"1985-03-12"</span>^^xsd:date ;<br>
+&nbsp;&nbsp;<span class="tu-attr">fhir:gender</span>     <span class="tu-str">"female"</span> ;<br>
+&nbsp;&nbsp;<span class="tu-attr">fhir:condition</span>  ex:condition_001 .<br>
+<br>
+ex:condition_001<br>
+&nbsp;&nbsp;<span class="tu-kw">a</span>               <span class="tu-attr">fhir:Condition</span> ;<br>
+&nbsp;&nbsp;<span class="tu-attr">fhir:code</span>       <span class="tu-uri">&lt;http://snomed.info/id/38341003&gt;</span> .<br>
+<span class="tu-cm"># ^^ that SNOMED IRI links directly to the ontology</span>
+    </div>
+  </div>
+
+  <p class="footnote">Key take-away: a triple is a sentence. "Patient 001 was born on 1985-03-12." Write enough sentences and you have a knowledge graph.</p>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-rdf-hands – RDF Hands-on
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-rdf-hands">
+  <p class="kicker">Day 2 &nbsp;·&nbsp; 10:45 – 11:15</p>
+  <h2>RDF hands-on — turning the mock dataset into triples</h2>
+  <p class="tu-intro">Using the HemaFAIR mock dataset (already loaded into OMOP CDM), we will express selected records as RDF triples in Turtle. Goal: see the same data in two representations and understand what the IRI layer adds.</p>
+
+  <div class="tu-two-col">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tu-steps">
+        <div class="tu-step"><span class="tu-step-num">1</span>Open the Turtle editor (link on screen) — validates as you type</div>
+        <div class="tu-step"><span class="tu-step-num">2</span>Describe one patient row from the mock OMOP <code>person</code> table as RDF triples</div>
+        <div class="tu-step"><span class="tu-step-num">3</span>Add at least one condition using a SNOMED IRI from EBI OLS</div>
+        <div class="tu-step"><span class="tu-step-num">4</span>Connect your patient to the Wikidata item for their condition using <code>owl:sameAs</code></div>
+        <div class="tu-step"><span class="tu-step-num">5</span>Paste your Turtle into the shared pad — compare with a neighbour</div>
+      </div>
+      <div class="tu-callout">
+        <strong>Tools open in your browser:</strong> EBI OLS4 for ontology term lookup · Turtle validator at shex.io · Wikidata for condition IRIs
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tu-box">
+        <div class="tu-box-hd">Mock OMOP row (abridged)</div>
+        <div class="tu-box-body" style="font-family:'Courier New',monospace;font-size:0.75em;line-height:1.7">
+          person_id: 001<br>
+          birth_datetime: 1985-03-12<br>
+          gender_concept_id: 8532 (Female)<br>
+          condition: Hypertension<br>
+          &nbsp;&nbsp;SNOMED: 38341003<br>
+          drug: Lisinopril<br>
+          &nbsp;&nbsp;RxNorm: 29046
+        </div>
+      </div>
+      <div class="tu-warn">
+        <strong>Watch out:</strong> which prefix does SNOMED use — <code>http://snomed.info/id/</code> or <code>https://</code>? Check OLS before you type. This is the prefix mismatch problem in practice.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-sparql – SPARQL: combining OMOP data with external KGs
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-sparql">
+  <p class="kicker">Day 2 &nbsp;·&nbsp; 11:30 – 12:30</p>
+  <h2>SPARQL — writing queries across OMOP and external knowledge graphs</h2>
+  <p class="tu-intro">Ontop exposes the OMOP CDM as a SPARQL endpoint. We can then add a <code>SERVICE</code> clause to pull in any public endpoint — Wikidata, UniProt, ChEMBL — and join the results in one query, without copying data.</p>
+
+  <div class="tu-sparql-layout">
+    <div class="tu-sparql-left">
+      <div class="tu-code" style="flex:1">
+<span class="tu-cm"># Find all patients with hypertension,</span><br>
+<span class="tu-cm"># then pull drug info from Wikidata</span><br>
+<br>
+<span class="tu-kw">PREFIX</span> fhir: <span class="tu-uri">&lt;http://hl7.org/fhir/&gt;</span><br>
+<span class="tu-kw">PREFIX</span> wd:   <span class="tu-uri">&lt;http://www.wikidata.org/entity/&gt;</span><br>
+<span class="tu-kw">PREFIX</span> wdt:  <span class="tu-uri">&lt;http://www.wikidata.org/prop/direct/&gt;</span><br>
+<br>
+<span class="tu-kw">SELECT</span> <span class="tu-var">?patient ?drug ?drugLabel</span><br>
+<span class="tu-kw">WHERE</span> {<br>
+&nbsp;&nbsp;<span class="tu-cm"># Local OMOP (via Ontop)</span><br>
+&nbsp;&nbsp;<span class="tu-var">?patient</span> <span class="tu-kw">a</span> <span class="tu-attr">fhir:Patient</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-attr">fhir:condition</span> <span class="tu-var">?cond</span> .<br>
+&nbsp;&nbsp;<span class="tu-var">?cond</span> <span class="tu-attr">fhir:code</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-uri">&lt;http://snomed.info/id/38341003&gt;</span> .<br>
+&nbsp;&nbsp;<span class="tu-var">?patient</span> <span class="tu-attr">fhir:medication</span> <span class="tu-var">?drug</span> .<br>
+<br>
+&nbsp;&nbsp;<span class="tu-cm"># Federate to Wikidata</span><br>
+&nbsp;&nbsp;<span class="tu-kw">SERVICE</span> <span class="tu-uri">&lt;https://query.wikidata.org/sparql&gt;</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-var">?wdDrug</span> <span class="tu-attr">wdt:P3345</span> <span class="tu-var">?drug</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-attr">rdfs:label</span> <span class="tu-var">?drugLabel</span> .<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-kw">FILTER</span>(<span class="tu-kw">LANG</span>(<span class="tu-var">?drugLabel</span>) = <span class="tu-str">"en"</span>)<br>
+&nbsp;&nbsp;}<br>
+}
+      </div>
+    </div>
+
+    <div class="tu-sparql-right">
+      <div class="tu-box">
+        <div class="tu-box-hd">What we will query together</div>
+        <div class="tu-box-body">
+          <strong>Exercise 1</strong> — List all patients with their SNOMED condition codes<br><br>
+          <strong>Exercise 2</strong> — Count patients per condition, ordered by frequency<br><br>
+          <strong>Exercise 3</strong> — Federate to Wikidata: for each drug in the mock dataset, retrieve its MeSH descriptor and ATC classification
+        </div>
+      </div>
+      <div class="tu-box">
+        <div class="tu-box-hd">Endpoint URLs for today</div>
+        <div class="tu-box-body" style="font-family:'Courier New',monospace;font-size:0.76em;line-height:1.8">
+          Local Ontop:<br>
+          <span style="color:#009CB4">http://[server]/sparql</span><br><br>
+          Wikidata:<br>
+          <span style="color:#009CB4">https://query.wikidata.org/sparql</span><br><br>
+          UniProt:<br>
+          <span style="color:#009CB4">https://sparql.uniprot.org/sparql</span>
+        </div>
+      </div>
+      <div class="tu-callout">
+        <strong>Remember:</strong> <code>SERVICE</code> is live federation — the remote endpoint answers in real time. If Wikidata is slow, we switch to the cached mirror.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DAY 3 DIVIDER
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide day-divider" id="t-day3">
+  <p class="day-num">Day 3 &nbsp;·&nbsp; Two sessions</p>
+  <h2 class="day-title">SPARQL for FedBioMed<br>&amp; Wrap-up</h2>
+  <div class="day-sep"></div>
+  <div class="day-sessions">
+    <div class="day-session-item">
+      <span class="day-session-time">15:00 – 16:00</span>
+      <span>Hands-on: write the SPARQL query that extracts the features FedBioMed needs for analysis</span>
+    </div>
+    <div class="day-session-item">
+      <span class="day-session-time">16:30</span>
+      <span>Wrap-up &amp; demo — full pipeline end-to-end, preview of Day 4 hackathon</span>
+    </div>
+  </div>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-fedbio – SPARQL for FedBioMed
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-fedbio">
+  <p class="kicker">Day 3 &nbsp;·&nbsp; 15:00 – 16:00</p>
+  <h2>SPARQL hands-on — extracting features for federated learning</h2>
+  <p class="tu-intro">FedBioMed expects a structured feature table: one row per patient, columns for each clinical variable. We will write the SPARQL query that pulls exactly those columns from the Ontop endpoint — no ETL script, no data export.</p>
+
+  <div class="tu-two-col">
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="tu-box">
+        <div class="tu-box-hd">Features FedBioMed needs (mock analysis)</div>
+        <div class="tu-box-body">
+          <table style="width:100%;font-size:0.85em;border-collapse:collapse">
+            <tr style="background:#EEF6F5">
+              <th style="padding:4px 8px;text-align:left;font-weight:700;color:#003741">Column</th>
+              <th style="padding:4px 8px;text-align:left;font-weight:700;color:#003741">OMOP source</th>
+            </tr>
+            <tr><td style="padding:4px 8px;border-top:1px solid #eee"><code>patient_id</code></td><td style="padding:4px 8px;border-top:1px solid #eee">person.person_id</td></tr>
+            <tr><td style="padding:4px 8px;border-top:1px solid #eee"><code>age</code></td><td style="padding:4px 8px;border-top:1px solid #eee">person.birth_datetime</td></tr>
+            <tr><td style="padding:4px 8px;border-top:1px solid #eee"><code>hypertension</code></td><td style="padding:4px 8px;border-top:1px solid #eee">condition_occurrence (SNOMED 38341003)</td></tr>
+            <tr><td style="padding:4px 8px;border-top:1px solid #eee"><code>on_acei</code></td><td style="padding:4px 8px;border-top:1px solid #eee">drug_exposure (RxNorm ACE inhibitors)</td></tr>
+            <tr><td style="padding:4px 8px;border-top:1px solid #eee"><code>sbp_last</code></td><td style="padding:4px 8px;border-top:1px solid #eee">measurement (LOINC 8480-6)</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="tu-steps">
+        <div class="tu-step"><span class="tu-step-num">1</span>Identify the FHIR/RDF predicate for each feature in the Ontop mapping</div>
+        <div class="tu-step"><span class="tu-step-num">2</span>Write a SPARQL SELECT with one variable per feature column</div>
+        <div class="tu-step"><span class="tu-step-num">3</span>Use OPTIONAL for features that may not exist for every patient</div>
+        <div class="tu-step"><span class="tu-step-num">4</span>Export as CSV and load into the FedBioMed notebook</div>
+      </div>
+    </div>
+
+    <div class="tu-code" style="flex:1">
+<span class="tu-cm"># Starter query — extend during the exercise</span><br>
+<br>
+<span class="tu-kw">PREFIX</span> fhir: <span class="tu-uri">&lt;http://hl7.org/fhir/&gt;</span><br>
+<span class="tu-kw">PREFIX</span> xsd:  <span class="tu-uri">&lt;http://www.w3.org/2001/XMLSchema#&gt;</span><br>
+<br>
+<span class="tu-kw">SELECT</span> <span class="tu-var">?patient ?age</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-var">?hypertension ?on_acei ?sbp</span><br>
+<span class="tu-kw">WHERE</span> {<br>
+&nbsp;&nbsp;<span class="tu-var">?patient</span> <span class="tu-kw">a</span> <span class="tu-attr">fhir:Patient</span> ;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-attr">fhir:birthDate</span> <span class="tu-var">?dob</span> .<br>
+&nbsp;&nbsp;<span class="tu-kw">BIND</span>(<span class="tu-kw">year</span>(<span class="tu-kw">now</span>()) - <span class="tu-kw">year</span>(<span class="tu-var">?dob</span>) <span class="tu-kw">AS</span> <span class="tu-var">?age</span>)<br>
+<br>
+&nbsp;&nbsp;<span class="tu-cm"># hypertension flag</span><br>
+&nbsp;&nbsp;<span class="tu-kw">OPTIONAL</span> {<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-var">?patient</span> <span class="tu-attr">fhir:condition</span> <span class="tu-var">?c</span> .<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-var">?c</span> <span class="tu-attr">fhir:code</span><br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-uri">&lt;http://snomed.info/id/38341003&gt;</span> .<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="tu-kw">BIND</span>(<span class="tu-kw">true</span> <span class="tu-kw">AS</span> <span class="tu-var">?hypertension</span>)<br>
+&nbsp;&nbsp;}<br>
+&nbsp;&nbsp;<span class="tu-cm"># TODO: add ACE inhibitor and SBP blocks</span><br>
+}
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-wrapup – Wrap-up & demo
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-wrapup">
+  <p class="kicker">Day 3 &nbsp;·&nbsp; 16:30</p>
+  <h2>Wrap-up — the full pipeline, end to end</h2>
+  <p class="tu-intro">Everything we built over three days is a single, unbroken chain. No data was duplicated. No schema was changed. Tomorrow the hackathon teams will pick up this pipeline and add federated learning on top.</p>
+
+  <div class="tu-pipeline-wrap">
+
+    <div class="tu-pipe-row">
+      <div class="tu-pipe-node tu-node-omop">
+        <div class="tu-pipe-node-lbl">① OMOP CDM</div>
+        <div class="tu-pipe-node-sub">Mock dataset loaded into DuckDB — person, condition_occurrence, drug_exposure, measurement</div>
+      </div>
+      <div class="tu-pipe-arrow">→</div>
+      <div class="tu-pipe-node tu-node-r2rml">
+        <div class="tu-pipe-node-lbl">② R2RML mappings</div>
+        <div class="tu-pipe-node-sub">TriplesMap files declare how each table row becomes an RDF triple — authored by Daphne's group</div>
+      </div>
+      <div class="tu-pipe-arrow">→</div>
+      <div class="tu-pipe-node tu-node-ontop">
+        <div class="tu-pipe-node-lbl">③ Ontop virtual KG</div>
+        <div class="tu-pipe-node-sub">Rewrites SPARQL to SQL at query time — data never leaves DuckDB</div>
+      </div>
+    </div>
+
+    <div class="tu-pipe-row" style="padding-left: 30%">
+      <div class="tu-pipe-arrow" style="transform:rotate(90deg)">→</div>
+    </div>
+
+    <div class="tu-pipe-row">
+      <div class="tu-pipe-node tu-node-fedbio">
+        <div class="tu-pipe-node-lbl">⑤ FedBioMed</div>
+        <div class="tu-pipe-node-sub">Receives feature CSV — runs federated statistical model across all sites without seeing raw data</div>
+      </div>
+      <div class="tu-pipe-arrow">←</div>
+      <div class="tu-pipe-node tu-node-sparql">
+        <div class="tu-pipe-node-lbl">④ SPARQL extraction query</div>
+        <div class="tu-pipe-node-sub">Selects age, diagnosis flags, drug exposures, measurements — exports as CSV for FedBioMed input</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="tu-callout" style="margin-top:12px">
+    <strong>What changes at each site in the hackathon:</strong> only the DuckDB database (different patients). The R2RML mappings, Ontop config, and SPARQL query travel unchanged — that is the promise of standards-based interoperability.
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     SLIDE t-thankyou – Thank you
+     ══════════════════════════════════════════════════════════════ -->
+<section class="slide" id="t-thankyou">
+  <h1 class="ty-big">See you tomorrow.</h1>
+  <p class="ty-sub">Questions, comments, and collaborations very welcome.</p>
+  <div class="ty-sep"></div>
+  <div class="ty-lower">
+    <div class="ty-contact">
+      <p class="ty-line">
+        <span class="ty-bar ty-email-bar"></span>
+        a.s.waagmeester@amsterdamumc.nl
+      </p>
+      <p class="ty-line">
+        <span class="ty-bar ty-orcid-bar"></span>
+        ORCID &nbsp;0000-0001-9773-4008
+      </p>
+      <p class="ty-line">
+        <span class="ty-bar ty-url-bar"></span>
+        Amsterdam UMC
+      </p>
+    </div>
+  </div>
+  <div class="dot-grid" aria-hidden="true">
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+    <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     DETAIL SLIDES
+     ══════════════════════════════════════════════════════════════ -->
+
+<section class="slide detail-slide" id="t1-d1" data-parent="t1">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Title</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📋</div>
+    <p><strong>About this slide deck</strong><br>
+    This deck covers Andra Waagmeester's sessions across the HemaFAIR tutorial week. Sessions span Day 1 (Semantic Landscapes), Day 2 (Introduction to RDF · RDF hands-on · SPARQL for data combination), and Day 3 (SPARQL for FedBioMed · Wrap-up &amp; demo).<br><br>
+    The narrative thread: clinical data is fragmented across OMOP, FHIR, and biomedical ontologies — RDF and SPARQL are the connecting layer — Ontop exposes it all without moving data — FedBioMed runs analysis on top.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tprog-d1" data-parent="t-program">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Programme overview</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🗓️</div>
+    <p><strong>Programme notes</strong><br>
+    Times marked with "can be modified" in the original Miro board — treat all times as approximate.<br><br>
+    <strong>Infrastructure needed for Andra's sessions:</strong><br>
+    • Day 2 RDF hands-on — online Turtle editor + EBI OLS4 + Wikidata (browser only, no server needed)<br>
+    • Day 2 SPARQL — running Ontop instance + participants need SPARQL client (browser or Python notebook)<br>
+    • Day 3 SPARQL for FedBioMed — same Ontop instance + FedBioMed notebook environment<br><br>
+    <strong>Shared infrastructure with Daphne's sessions:</strong> the Ontop instance she configures on Day 2 afternoon is the same endpoint used in Andra's Day 3 session.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tday1-d1" data-parent="t-day1">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Day 1 divider</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📅</div>
+    <p><strong>Day 1 context</strong><br>
+    Andra's slot (10:30–11:00) comes right after the opening remarks and before the OMOP CDM deep-dive. The goal is to orient participants to the semantic layer before they encounter OMOP — so that when Rowdy introduces the CDM, participants already have a mental model for why RDF will be added on top later.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tsemantic-d1" data-parent="t-semantic">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Semantic Landscapes</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🌐</div>
+    <p><strong>Speaker notes — Semantic Landscapes (30 min)</strong><br><br>
+    Open with a concrete pain point: "You have a cohort in OMOP. Your collaborator has one in FHIR. You want to run the same analysis. What breaks?" — let participants call out the problems (different field names, different code systems, no shared patient ID).<br><br>
+    Then walk through the four silos on the slide and explain what each does well. The point is not that any silo is wrong — it is that none of them were designed to talk to each other.<br><br>
+    The bridge panel at the bottom introduces the three things we will build over the week: RDF triples (the data model) + shared URIs (the naming layer) + SPARQL (the query language). Keep this brief — Day 2 goes into depth.<br><br>
+    Close with the pipeline preview: "By end of Day 3 you will have queried all four silos simultaneously from a single SPARQL query — without touching the raw data."<br><br>
+    <strong>Timing:</strong> 10 min opening exercise → 10 min silo walk-through → 5 min bridge/Semantic Web intro → 5 min pipeline preview and Q&amp;A.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tday2-d1" data-parent="t-day2">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Day 2 divider</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📅</div>
+    <p><strong>Day 2 context</strong><br>
+    By Day 2 participants have loaded the mock dataset into OMOP CDM (Rowdy's ETL from Day 1). Andra's three slots build the semantic layer on top of that loaded data — they end with a live SPARQL query combining OMOP with Wikidata, which feeds directly into Daphne's Ontop/OBDA sessions after lunch.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="trdf-d1" data-parent="t-rdf">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Introduction to RDF</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔗</div>
+    <p><strong>Speaker notes — Introduction to RDF (30 min)</strong><br><br>
+    Start with the triple demo panel on the slide — ask participants to read it as a sentence: "Patient 001 was born on 1985-03-12." Emphasise that this is not a new idea; it is the way we already talk about data.<br><br>
+    Work through the Turtle code block live. Show how semicolons let you write multiple facts about the same subject without repeating the URI. Show how the SNOMED IRI in the last triple is itself dereferenceable — open it in a browser.<br><br>
+    Key concepts to land:<br>
+    • IRI = global name, not just a web address<br>
+    • Prefix = shorthand, nothing more<br>
+    • Turtle = the most human-readable RDF format<br>
+    • <code>a</code> is just shorthand for <code>rdf:type</code><br><br>
+    <strong>Common question:</strong> "Why not just use JSON?" — Answer: JSON has no globally shared property names. <code>fhir:birthDate</code> is the same property everywhere in the world; <code>"birthDate"</code> in JSON means whatever the author decided.<br><br>
+    <strong>Timing:</strong> 5 min triple intro → 10 min live Turtle coding → 10 min questions → 5 min preview of hands-on.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="trhands-d1" data-parent="t-rdf-hands">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">RDF Hands-on</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">💻</div>
+    <p><strong>Speaker notes — RDF Hands-on (30 min)</strong><br><br>
+    Participants write Turtle from the mock OMOP row shown on the slide. Use a shared live Turtle validator (shex.io works well) — paste results into a shared HackMD or Google Doc so the group can compare.<br><br>
+    The deliberate trap in step 3 is the SNOMED IRI prefix — some participants will write <code>https://snomed.info/id/</code> instead of <code>http://snomed.info/id/</code>. Let them discover this when they try to load both files into the same graph and a JOIN returns nothing.<br><br>
+    <strong>Debrief questions:</strong><br>
+    • Did everyone end up with the same IRI for the same patient? (No — and that is a problem.)<br>
+    • What would need to be agreed to make them the same? (A shared base IRI for the dataset.)<br>
+    • What happened when you compared your SNOMED prefix with your neighbour's?<br><br>
+    <strong>Timing:</strong> 5 min setup → 15 min individual/pair exercise → 10 min debrief.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tsparql-d1" data-parent="t-sparql">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">SPARQL — combining data</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🔍</div>
+    <p><strong>Speaker notes — SPARQL combining data (60 min)</strong><br><br>
+    This session is the payoff for the morning. Participants now have Ontop running (Daphne's instance from Day 2 morning setup) and can query the OMOP data they loaded on Day 1 — as if it were always RDF.<br><br>
+    Walk through the three exercises in order. Exercise 1 builds confidence. Exercise 2 introduces aggregation. Exercise 3 is where it gets interesting: <code>SERVICE</code> pulls from Wikidata without any data movement.<br><br>
+    <strong>If Wikidata is slow:</strong> switch to the cached Wikidata mirror at <code>https://qlever.cs.uni-freiburg.de/wikidata/sparql</code> — same data, sub-second responses.<br><br>
+    <strong>Common mistake:</strong> wrong Wikidata property IDs. Have the Wikidata item for Lisinopril open in a browser tab so participants can look up <code>P3345</code> (RxNorm ID) themselves.<br><br>
+    <strong>Timing:</strong> 10 min live demo of Exercise 1 → 10 min participants try Exercise 2 → 5 min debrief → 20 min Exercise 3 (pairs) → 15 min debrief + preview of Daphne's afternoon Ontop session.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tday3-d1" data-parent="t-day3">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Day 3 divider</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">📅</div>
+    <p><strong>Day 3 context</strong><br>
+    By Day 3 afternoon, Daphne's group has built and demonstrated the full R2RML → Ontop mapping of the mock dataset. Andra's session picks up that endpoint and uses it to produce the exact feature table that FedBioMed will consume on Day 4. The wrap-up at 16:30 closes the semantic-web arc of the training school.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="tfedbio-d1" data-parent="t-fedbio">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">SPARQL for FedBioMed</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🧬</div>
+    <p><strong>Speaker notes — SPARQL for FedBioMed hands-on (60 min)</strong><br><br>
+    The starter query on the slide returns patient age and hypertension flag. Participants extend it to add two more columns: ACE-inhibitor exposure (drug_exposure filtered by RxNorm class) and last systolic blood pressure measurement (LOINC 8480-6).<br><br>
+    Once the full query returns correct results, participants export CSV from the Ontop SPARQL UI (or via Python: <code>pd.read_csv(endpoint_url + "?format=csv&query=" + urllib.parse.quote(q))</code>) and hand it to the FedBioMed notebook.<br><br>
+    <strong>Anticipated difficulty:</strong> OPTIONAL vs required — if a patient has no measurement, they should still appear with <code>?sbp = UNDEF</code> rather than being dropped. Walk through this explicitly.<br><br>
+    <strong>Connection to Day 4:</strong> Francesco's hackathon teams will use this exact CSV export pattern at multiple sites. The SPARQL query is the "data contract" between the KG layer and the FL layer.<br><br>
+    <strong>Timing:</strong> 5 min recap + goal setting → 25 min hands-on (extend starter query) → 15 min export + FedBioMed load test → 15 min debrief.</p>
+  </div></div>
+</section>
+
+<section class="slide detail-slide" id="twrapup-d1" data-parent="t-wrapup">
+  <div class="detail-hdr">
+    <button class="detail-back" onclick="goUp()">↑ Back</button>
+    <div><span class="detail-parent-lbl">Details for</span><span class="detail-parent-title">Wrap-up &amp; Demo</span></div>
+    <span class="detail-idx">1 / 1</span>
+  </div>
+  <div class="detail-body"><div class="detail-ph"><div class="dph-icon">🎯</div>
+    <p><strong>Speaker notes — Wrap-up &amp; Demo (30 min)</strong><br><br>
+    Run the full pipeline end-to-end as a live demo: open DuckDB → show the raw OMOP tables → switch to the Ontop SPARQL UI → run the FedBioMed extraction query → show the resulting CSV loading into the FedBioMed notebook → show a toy model training.<br><br>
+    Key message to land: "Every piece of software in this demo is already running at your institution. DuckDB, Ontop, and FedBioMed are all open source. The only new artefacts are the R2RML mapping file and the SPARQL query — and you built both of those yourselves this week."<br><br>
+    <strong>What to emphasise for Day 4:</strong><br>
+    • The hackathon has three sites (simulated). Each site runs the same pipeline locally.<br>
+    • The SPARQL query will not change between sites — the data does.<br>
+    • FedBioMed ensures the raw data never leaves the site.<br>
+    • The combined result is more powerful than any single site could produce.<br><br>
+    Close with: "Tomorrow you own the full stack. Good luck."</p>
+  </div></div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════════
+     Navigation
+     ══════════════════════════════════════════════════════════════ -->
+<nav>
+  <button id="btn-prev" onclick="go(-1)">← Prev</button>
+  <span class="counter" id="ctr"></span>
+  <button id="btn-next" onclick="go(1)">Next →</button>
+</nav>
+
+<script>
+const mainSlides   = [...document.querySelectorAll('.slide:not(.detail-slide)')];
+const detailSlides = [...document.querySelectorAll('.slide.detail-slide')];
+
+const detailMap = {};
+detailSlides.forEach(ds => {
+  const pid = ds.dataset.parent;
+  if (!detailMap[pid]) detailMap[pid] = [];
+  detailMap[pid].push(ds);
+});
+
+let mainCur   = 0;
+let detailCur = -1;
+
+const darkSlides = new Set(['t1', 't-day1', 't-day2', 't-day3', 't-thankyou']);
+
+function currentMainId()  { return mainSlides[mainCur].id; }
+function inDetail()       { return detailCur >= 0; }
+function currentDetails() { return detailMap[currentMainId()] || []; }
+
+function updateLogo() {
+  const logo = document.getElementById('fixed-logo');
+  if (!logo) return;
+  const activeId = inDetail()
+    ? currentDetails()[detailCur]?.id
+    : currentMainId();
+  logo.style.display = darkSlides.has(activeId) ? 'none' : 'block';
+}
+
+function render() {
+  [...mainSlides, ...detailSlides].forEach(s => s.classList.remove('active'));
+  const dets = currentDetails();
+  if (inDetail() && dets[detailCur]) {
+    dets[detailCur].classList.add('active');
+    document.getElementById('ctr').textContent =
+      (mainCur + 1) + '↓' + (detailCur + 1) + ' / ' + mainSlides.length;
+  } else {
+    mainSlides[mainCur].classList.add('active');
+    document.getElementById('ctr').textContent =
+      (mainCur + 1) + ' / ' + mainSlides.length;
+  }
+  document.getElementById('btn-prev').disabled = mainCur === 0 && !inDetail();
+  document.getElementById('btn-next').disabled =
+    mainCur === mainSlides.length - 1 && !inDetail();
+  updateLogo();
+}
+
+function go(dir) {
+  if (inDetail()) {
+    const next = detailCur + dir;
+    const dets = currentDetails();
+    if (next >= 0 && next < dets.length) {
+      detailCur = next;
+    } else if (next < 0) {
+      detailCur = -1;
+    }
+  } else {
+    mainCur = Math.max(0, Math.min(mainSlides.length - 1, mainCur + dir));
+  }
+  render();
+}
+
+function goDown() {
+  if (!inDetail() && currentDetails().length > 0) {
+    detailCur = 0;
+    render();
+  }
+}
+
+function goUp() {
+  if (inDetail()) {
+    detailCur = -1;
+    render();
+  }
+}
+
+mainSlides.forEach(slide => {
+  const btn = document.createElement('button');
+  btn.className = 'detail-btn';
+  btn.title = 'View details (↓)';
+  btn.innerHTML = '<span class="darr">▾</span><span>Details</span>';
+  btn.addEventListener('click', e => { e.stopPropagation(); goDown(); });
+  slide.appendChild(btn);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowDown')  { e.preventDefault(); inDetail() ? go(1) : goDown(); }
+  else if (e.key === 'ArrowUp')    { e.preventDefault(); inDetail() ? goUp() : null; }
+  else if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); go(1); }
+  else if (e.key === 'ArrowLeft')  { e.preventDefault(); go(-1); }
+});
+
+render();
+</script>
+</body>
+</html>
